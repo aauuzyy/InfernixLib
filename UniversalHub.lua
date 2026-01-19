@@ -38,6 +38,7 @@ local States = {
 -- Create Window
 local Window = InfernixLib:CreateWindow({
     Name = "Universal Hub",
+    Icon = InfernixLib.Icons.Sparkles,
     LoadingTitle = "Universal Hub",
     LoadingSubtitle = "by InfernixLib",
     Theme = "Dark",
@@ -57,11 +58,11 @@ InfernixLib:Notify({
     Duration = 5
 })
 
--- Create Tabs
-local PlayerTab = Window:CreateTab("Player", 4483362458)
-local MovementTab = Window:CreateTab("Movement", 4483362458)
-local VisualsTab = Window:CreateTab("Visuals", 4483362458)
-local MiscTab = Window:CreateTab("Misc", 4483362458)
+-- Create Tabs with proper icons
+local PlayerTab = Window:CreateTab("Player", InfernixLib.Icons.User)
+local MovementTab = Window:CreateTab("Movement", InfernixLib.Icons.Gamepad)
+local VisualsTab = Window:CreateTab("Visuals", InfernixLib.Icons.Eye)
+local MiscTab = Window:CreateTab("Misc", InfernixLib.Icons.Settings)
 
 -- Player Tab
 PlayerTab:CreateSection("Character Stats")
