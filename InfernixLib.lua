@@ -521,39 +521,6 @@ function InfernixLib:CreateWindow(config)
     AcrylicBlur.AddParent(MainFrame)
     Window.AcrylicBlur = AcrylicBlur
     
-    -- Acrylic overlay layer
-    local AcrylicBlur = Instance.new("Frame")
-    AcrylicBlur.Name = "AcrylicBlur"
-    AcrylicBlur.Size = UDim2.new(1, 0, 1, 0)
-    AcrylicBlur.BackgroundColor3 = Window.Theme.Background
-    AcrylicBlur.BackgroundTransparency = 0.35
-    AcrylicBlur.BorderSizePixel = 0
-    AcrylicBlur.ZIndex = 1
-    AcrylicBlur.Parent = Background
-    
-    local AcrylicCorner = Instance.new("UICorner")
-    AcrylicCorner.CornerRadius = UDim.new(0, 12)
-    AcrylicCorner.Parent = AcrylicBlur
-    
-    -- Noise texture for acrylic glass effect
-    local NoiseTexture = Instance.new("ImageLabel")
-    NoiseTexture.Name = "NoiseTexture"
-    NoiseTexture.Size = UDim2.new(1, 0, 1, 0)
-    NoiseTexture.BackgroundTransparency = 1
-    NoiseTexture.Image = "rbxassetid://8992230677"
-    NoiseTexture.ImageColor3 = Color3.fromRGB(255, 255, 255)
-    NoiseTexture.ImageTransparency = 0.94
-    NoiseTexture.ScaleType = Enum.ScaleType.Tile
-    NoiseTexture.TileSize = UDim2.new(0, 80, 0, 80)
-    NoiseTexture.ZIndex = 2
-    NoiseTexture.Parent = AcrylicBlur
-    
-    local NoiseCorner = Instance.new("UICorner")
-    NoiseCorner.CornerRadius = UDim.new(0, 12)
-    NoiseCorner.Parent = NoiseTexture
-    
-    Window.BlurEffect = nil -- No more fake Lighting blur
-    
     -- Premium border with subtle glow
     local BorderStroke = Instance.new("UIStroke")
     BorderStroke.Color = Window.Theme.Accent
