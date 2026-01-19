@@ -227,7 +227,7 @@ InfernixLib.Icons = {
     Settings = "rbxassetid://10734950309",
     User = "rbxassetid://10747374131",
     Shield = "rbxassetid://10723407389",
-    Eye = "rbxassetid://10747318871",
+    Eye = "rbxassetid://10747374131",
     Gamepad = "rbxassetid://10709790537",
     Sparkles = "rbxassetid://10709791437",
     Code = "rbxassetid://10709769841",
@@ -362,13 +362,13 @@ function InfernixLib:CreateWindow(config)
     MainFrame.Visible = false
     MainFrame.Parent = ScreenGui
     
-    -- Professional acrylic background (Fluent-style)
+    -- Professional acrylic background (Fluent-style with REAL blur)
     local Background = Instance.new("Frame")
     Background.Name = "Background"
     Background.Size = UDim2.new(1, 0, 1, 0)
     Background.Position = UDim2.new(0, 0, 0, 0)
     Background.BackgroundColor3 = Window.Theme.Background
-    Background.BackgroundTransparency = 0.05
+    Background.BackgroundTransparency = 0.15
     Background.BorderSizePixel = 0
     Background.ZIndex = 0
     Background.Parent = MainFrame
@@ -377,12 +377,17 @@ function InfernixLib:CreateWindow(config)
     BackgroundCorner.CornerRadius = UDim.new(0, 12)
     BackgroundCorner.Parent = Background
     
-    -- Real acrylic blur with noise texture
+    -- REAL Blur Effect (BackdropBlur)
+    local BlurEffect = Instance.new("BlurEffect")
+    BlurEffect.Size = 24
+    BlurEffect.Parent = game:GetService("Lighting")
+    
+    -- Acrylic overlay layer
     local AcrylicBlur = Instance.new("Frame")
     AcrylicBlur.Name = "AcrylicBlur"
     AcrylicBlur.Size = UDim2.new(1, 0, 1, 0)
     AcrylicBlur.BackgroundColor3 = Window.Theme.Background
-    AcrylicBlur.BackgroundTransparency = 0.4
+    AcrylicBlur.BackgroundTransparency = 0.35
     AcrylicBlur.BorderSizePixel = 0
     AcrylicBlur.ZIndex = 1
     AcrylicBlur.Parent = Background
@@ -398,7 +403,7 @@ function InfernixLib:CreateWindow(config)
     NoiseTexture.BackgroundTransparency = 1
     NoiseTexture.Image = "rbxassetid://8992230677"
     NoiseTexture.ImageColor3 = Color3.fromRGB(255, 255, 255)
-    NoiseTexture.ImageTransparency = 0.92
+    NoiseTexture.ImageTransparency = 0.94
     NoiseTexture.ScaleType = Enum.ScaleType.Tile
     NoiseTexture.TileSize = UDim2.new(0, 80, 0, 80)
     NoiseTexture.ZIndex = 2
@@ -407,6 +412,8 @@ function InfernixLib:CreateWindow(config)
     local NoiseCorner = Instance.new("UICorner")
     NoiseCorner.CornerRadius = UDim.new(0, 12)
     NoiseCorner.Parent = NoiseTexture
+    
+    Window.BlurEffect = BlurEffect
     
     -- Premium border with subtle glow
     local BorderStroke = Instance.new("UIStroke")
@@ -537,10 +544,10 @@ function InfernixLib:CreateWindow(config)
     local CloseIcon = Instance.new("TextLabel")
     CloseIcon.Size = UDim2.new(1, 0, 1, 0)
     CloseIcon.BackgroundTransparency = 1
-    CloseIcon.Text = "✕"
+    CloseIcon.Text = "X"
     CloseIcon.TextColor3 = Window.Theme.SubText
-    CloseIcon.TextSize = 14
-    CloseIcon.Font = Enum.Font.GothamSemibold
+    CloseIcon.TextSize = 16
+    CloseIcon.Font = Enum.Font.GothamBold
     CloseIcon.ZIndex = 10
     CloseIcon.Parent = CloseButton
     
@@ -906,24 +913,22 @@ function InfernixLib:CreateWindow(config)
             
             local ButtonFrame = Instance.new("Frame")
             ButtonFrame.Name = "Button"
-            ButtonFrame.Size = UDim2.new(1, 0, 0, 44)
+            ButtonFrame.Size = UDim2.new(1, 0, 0, 40)
             ButtonFrame.BackgroundColor3 = Window.Theme.ElementBackground
-            ButtonFrame.BackgroundTransparency = 0.3
+            ButtonFrame.BackgroundTransparency = 0.5
             ButtonFrame.BorderSizePixel = 0
             ButtonFrame.Parent = TabContent
             
             local ButtonCorner = Instance.new("UICorner")
-            ButtonCorner.CornerRadius = UDim.new(0, 10)
+            ButtonCorner.CornerRadius = UDim.new(0, 8)
             ButtonCorner.Parent = ButtonFrame
             
-            -- Add acrylic blur
-            CreateAcrylicBlur(ButtonFrame)
-            
-            -- Add gradient border
+            -- Professional border
             local ButtonBorder = Instance.new("UIStroke")
-            ButtonBorder.Color = Window.Theme.Accent
-            ButtonBorder.Transparency = 0.7
+            ButtonBorder.Color = Window.Theme.ElementBorder
+            ButtonBorder.Transparency = 0.5
             ButtonBorder.Thickness = 1
+            ButtonBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             ButtonBorder.Parent = ButtonFrame
             
             local ButtonButton = Instance.new("TextButton")
@@ -941,35 +946,50 @@ function InfernixLib:CreateWindow(config)
             ButtonLabel.BackgroundTransparency = 1
             ButtonLabel.Text = Button.Name
             ButtonLabel.TextColor3 = Window.Theme.Text
-            ButtonLabel.TextSize = 14
+            ButtonLabel.TextSize = 13
             ButtonLabel.Font = Enum.Font.GothamSemibold
-            ButtonLabel.TextXAlignment = Enum.TextXAlignment.Left
+            ButtonLabel.TextXAlignment = Enum.TextXAlignment.Center
             ButtonLabel.ZIndex = 3
             ButtonLabel.Parent = ButtonFrame
             
+            -- Click icon indicator
+            local ClickIcon = Instance.new("TextLabel")
+            ClickIcon.Name = "ClickIcon"
+            ClickIcon.Size = UDim2.new(0, 16, 0, 16)
+            ClickIcon.Position = UDim2.new(1, -24, 0.5, -8)
+            ClickIcon.BackgroundTransparency = 1
+            ClickIcon.Text = "▶"
+            ClickIcon.TextColor3 = Window.Theme.SubText
+            ClickIcon.TextSize = 10
+            ClickIcon.Font = Enum.Font.GothamBold
+            ClickIcon.ZIndex = 3
+            ClickIcon.Parent = ButtonFrame
+            
             ButtonButton.MouseButton1Click:Connect(function()
-                local pos = ButtonButton.AbsolutePosition
-                local size = ButtonButton.AbsoluteSize
-                CreateRipple(ButtonFrame, Mouse.X - pos.X, Mouse.Y - pos.Y)
+                -- Professional click animation
+                Tween(ButtonFrame, {BackgroundTransparency = 0.2}, 0.1)
+                Tween(ButtonBorder, {Color = Window.Theme.Accent, Transparency = 0}, 0.1)
+                Tween(ButtonLabel, {TextColor3 = Window.Theme.Accent}, 0.1)
                 
-                -- Flash effect
-                Tween(ButtonBorder, {Transparency = 0}, 0.1)
-                wait(0.1)
-                Tween(ButtonBorder, {Transparency = 0.7}, 0.3)
+                task.wait(0.15)
+                
+                Tween(ButtonFrame, {BackgroundTransparency = 0.5}, 0.2)
+                Tween(ButtonBorder, {Color = Window.Theme.ElementBorder, Transparency = 0.5}, 0.2)
+                Tween(ButtonLabel, {TextColor3 = Window.Theme.Text}, 0.2)
                 
                 pcall(Button.Callback)
             end)
             
             ButtonButton.MouseEnter:Connect(function()
-                Tween(ButtonFrame, {BackgroundTransparency = 0.1})
-                Tween(ButtonBorder, {Transparency = 0.4})
-                Tween(ButtonLabel, {TextColor3 = Window.Theme.AccentGradient[1]})
+                Tween(ButtonFrame, {BackgroundTransparency = 0.3}, 0.15)
+                Tween(ButtonBorder, {Transparency = 0.2}, 0.15)
+                Tween(ClickIcon, {TextColor3 = Window.Theme.Accent}, 0.15)
             end)
             
             ButtonButton.MouseLeave:Connect(function()
-                Tween(ButtonFrame, {BackgroundTransparency = 0.3})
-                Tween(ButtonBorder, {Transparency = 0.7})
-                Tween(ButtonLabel, {TextColor3 = Window.Theme.Text})
+                Tween(ButtonFrame, {BackgroundTransparency = 0.5}, 0.15)
+                Tween(ButtonBorder, {Transparency = 0.5}, 0.15)
+                Tween(ClickIcon, {TextColor3 = Window.Theme.SubText}, 0.15)
             end)
             
             Button.Element = ButtonFrame
@@ -994,45 +1014,46 @@ function InfernixLib:CreateWindow(config)
             
             local ToggleFrame = Instance.new("Frame")
             ToggleFrame.Name = "Toggle"
-            ToggleFrame.Size = UDim2.new(1, 0, 0, 44)
+            ToggleFrame.Size = UDim2.new(1, 0, 0, 40)
             ToggleFrame.BackgroundColor3 = Window.Theme.ElementBackground
-            ToggleFrame.BackgroundTransparency = 0.3
+            ToggleFrame.BackgroundTransparency = 0.5
             ToggleFrame.BorderSizePixel = 0
             ToggleFrame.Parent = TabContent
             
             local ToggleCorner = Instance.new("UICorner")
-            ToggleCorner.CornerRadius = UDim.new(0, 10)
+            ToggleCorner.CornerRadius = UDim.new(0, 8)
             ToggleCorner.Parent = ToggleFrame
             
-            CreateAcrylicBlur(ToggleFrame)
-            
             local ToggleBorder = Instance.new("UIStroke")
-            ToggleBorder.Color = Window.Theme.Accent
-            ToggleBorder.Transparency = 0.7
+            ToggleBorder.Color = Window.Theme.ElementBorder
+            ToggleBorder.Transparency = 0.5
             ToggleBorder.Thickness = 1
+            ToggleBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             ToggleBorder.Parent = ToggleFrame
             
             local ToggleLabel = Instance.new("TextLabel")
             ToggleLabel.Name = "Label"
-            ToggleLabel.Size = UDim2.new(1, -72, 1, 0)
+            ToggleLabel.Size = UDim2.new(1, -70, 1, 0)
             ToggleLabel.Position = UDim2.new(0, 12, 0, 0)
             ToggleLabel.BackgroundTransparency = 1
             ToggleLabel.Text = Toggle.Name
             ToggleLabel.TextColor3 = Window.Theme.Text
-            ToggleLabel.TextSize = 14
+            ToggleLabel.TextSize = 13
             ToggleLabel.Font = Enum.Font.GothamSemibold
             ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
             ToggleLabel.ZIndex = 2
             ToggleLabel.Parent = ToggleFrame
             
+            -- Professional toggle switch
             local ToggleButton = Instance.new("TextButton")
             ToggleButton.Name = "ToggleButton"
-            ToggleButton.Size = UDim2.new(0, 48, 0, 26)
-            ToggleButton.Position = UDim2.new(1, -60, 0.5, -13)
+            ToggleButton.Size = UDim2.new(0, 44, 0, 24)
+            ToggleButton.Position = UDim2.new(1, -54, 0.5, -12)
             ToggleButton.BackgroundColor3 = Window.Theme.ElementBorder
             ToggleButton.BackgroundTransparency = 0
             ToggleButton.BorderSizePixel = 0
             ToggleButton.Text = ""
+            ToggleButton.AutoButtonColor = false
             ToggleButton.ZIndex = 2
             ToggleButton.Parent = ToggleFrame
             
@@ -1042,8 +1063,8 @@ function InfernixLib:CreateWindow(config)
             
             local ToggleIndicator = Instance.new("Frame")
             ToggleIndicator.Name = "Indicator"
-            ToggleIndicator.Size = UDim2.new(0, 20, 0, 20)
-            ToggleIndicator.Position = UDim2.new(0, 3, 0.5, -10)
+            ToggleIndicator.Size = UDim2.new(0, 18, 0, 18)
+            ToggleIndicator.Position = UDim2.new(0, 3, 0.5, -9)
             ToggleIndicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             ToggleIndicator.BorderSizePixel = 0
             ToggleIndicator.ZIndex = 3
@@ -1053,66 +1074,62 @@ function InfernixLib:CreateWindow(config)
             IndicatorCorner.CornerRadius = UDim.new(1, 0)
             IndicatorCorner.Parent = ToggleIndicator
             
-            -- Add glow effect to indicator
-            local IndicatorGlow = Instance.new("ImageLabel")
-            IndicatorGlow.Size = UDim2.new(1, 10, 1, 10)
-            IndicatorGlow.Position = UDim2.new(0.5, 0, 0.5, 0)
-            IndicatorGlow.AnchorPoint = Vector2.new(0.5, 0.5)
-            IndicatorGlow.BackgroundTransparency = 1
-            IndicatorGlow.Image = "rbxassetid://5028857084"
-            IndicatorGlow.ImageColor3 = Window.Theme.Accent
-            IndicatorGlow.ImageTransparency = 1
-            IndicatorGlow.ZIndex = 2
-            IndicatorGlow.Parent = ToggleIndicator
+            -- Shadow for indicator
+            local IndicatorShadow = Instance.new("ImageLabel")
+            IndicatorShadow.Size = UDim2.new(1, 4, 1, 4)
+            IndicatorShadow.Position = UDim2.new(0.5, 0, 0.5, 1)
+            IndicatorShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+            IndicatorShadow.BackgroundTransparency = 1
+            IndicatorShadow.Image = "rbxassetid://5028857084"
+            IndicatorShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            IndicatorShadow.ImageTransparency = 0.7
+            IndicatorShadow.ZIndex = 2
+            IndicatorShadow.Parent = ToggleIndicator
             
-            local function UpdateToggle(value)
+            local function UpdateToggle(value, skipCallback)
                 Toggle.CurrentValue = value
                 
                 if value then
-                    Tween(ToggleButton, {BackgroundColor3 = Window.Theme.AccentGradient[1]})
-                    Tween(ToggleIndicator, {Position = UDim2.new(1, -23, 0.5, -10)})
-                    Tween(IndicatorGlow, {ImageTransparency = 0.5})
-                    CreateAnimatedGradient(ToggleButton, Window.Theme.AccentGradient, 3)
+                    Tween(ToggleButton, {BackgroundColor3 = Window.Theme.Accent}, 0.2)
+                    Tween(ToggleIndicator, {Position = UDim2.new(1, -21, 0.5, -9)}, 0.2, Enum.EasingStyle.Quint)
+                    Tween(ToggleBorder, {Color = Window.Theme.Accent, Transparency = 0.3}, 0.2)
                 else
-                    Tween(ToggleButton, {BackgroundColor3 = Window.Theme.ElementBorder})
-                    Tween(ToggleIndicator, {Position = UDim2.new(0, 3, 0.5, -10)})
-                    Tween(IndicatorGlow, {ImageTransparency = 1})
-                    -- Remove gradient
-                    for _, child in pairs(ToggleButton:GetChildren()) do
-                        if child:IsA("UIGradient") then
-                            child:Destroy()
-                        end
-                    end
+                    Tween(ToggleButton, {BackgroundColor3 = Window.Theme.ElementBorder}, 0.2)
+                    Tween(ToggleIndicator, {Position = UDim2.new(0, 3, 0.5, -9)}, 0.2, Enum.EasingStyle.Quint)
+                    Tween(ToggleBorder, {Color = Window.Theme.ElementBorder, Transparency = 0.5}, 0.2)
                 end
                 
                 Window:RegisterFlag(Toggle.Flag, value)
-                pcall(Toggle.Callback, value)
+                if not skipCallback then
+                    pcall(Toggle.Callback, value)
+                end
             end
             
             ToggleButton.MouseButton1Click:Connect(function()
                 UpdateToggle(not Toggle.CurrentValue)
-                CreateRipple(ToggleButton, ToggleButton.AbsoluteSize.X/2, ToggleButton.AbsoluteSize.Y/2)
             end)
             
             ToggleFrame.MouseEnter:Connect(function()
-                Tween(ToggleFrame, {BackgroundTransparency = 0.1})
-                Tween(ToggleBorder, {Transparency = 0.4})
+                Tween(ToggleFrame, {BackgroundTransparency = 0.3}, 0.15)
             end)
             
             ToggleFrame.MouseLeave:Connect(function()
-                Tween(ToggleFrame, {BackgroundTransparency = 0.3})
-                Tween(ToggleBorder, {Transparency = 0.7})
+                Tween(ToggleFrame, {BackgroundTransparency = 0.5}, 0.15)
             end)
             
             Toggle.Element = ToggleFrame
+            
+            function Toggle:SetValue(value)
+                UpdateToggle(value, true)
+            end
             
             function Toggle:Set(value)
                 UpdateToggle(value)
             end
             
-            -- Initialize
+            -- Initialize with current value
             if Toggle.CurrentValue then
-                UpdateToggle(true)
+                UpdateToggle(true, true)
             end
             
             return Toggle
