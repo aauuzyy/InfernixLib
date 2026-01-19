@@ -529,20 +529,6 @@ function InfernixLib:CreateWindow(config)
     BorderStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     BorderStroke.Parent = Background
     
-    -- Professional shadow (Fluent-style)
-    local Shadow = Instance.new("ImageLabel")
-    Shadow.Name = "Shadow"
-    Shadow.BackgroundTransparency = 1
-    Shadow.Position = UDim2.new(0, -20, 0, -20)
-    Shadow.Size = UDim2.new(1, 40, 1, 40)
-    Shadow.Image = "rbxassetid://8992230677"
-    Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    Shadow.ImageTransparency = 0.5
-    Shadow.ScaleType = Enum.ScaleType.Slice
-    Shadow.SliceCenter = Rect.new(100, 100, 100, 100)
-    Shadow.ZIndex = -1
-    Shadow.Parent = MainFrame
-    
     Window.MainFrame = MainFrame
     
     -- Top Bar (Fluent-style header)
