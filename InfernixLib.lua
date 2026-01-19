@@ -644,6 +644,13 @@ function InfernixLib:CreateWindow(config)
     CloseIcon.Parent = CloseButton
     
     CloseButton.MouseButton1Click:Connect(function()
+        -- Clean up acrylic blur
+        if Window.AcrylicBlur and Window.AcrylicBlur.Model then
+            Window.AcrylicBlur.Model:Destroy()
+        end
+        if Acrylic.DepthOfField then
+            Acrylic.DepthOfField:Destroy()
+        end
         Tween(MainFrame, {Size = UDim2.new(0, 580, 0, 0)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
             ScreenGui:Destroy()
         end)
@@ -703,8 +710,14 @@ function InfernixLib:CreateWindow(config)
         if self.Visible then
             MainFrame.Visible = true
             MainFrame.Size = UDim2.new(0, 580, 0, 0)
+            if self.AcrylicBlur then
+                self.AcrylicBlur.SetVisibility(true)
+            end
             Tween(MainFrame, {Size = UDim2.new(0, 580, 0, 460)}, 0.35, Enum.EasingStyle.Quint)
         else
+            if self.AcrylicBlur then
+                self.AcrylicBlur.SetVisibility(false)
+            end
             Tween(MainFrame, {Size = UDim2.new(0, 580, 0, 0)}, 0.25, Enum.EasingStyle.Quint).Completed:Connect(function()
                 MainFrame.Visible = false
             end)
