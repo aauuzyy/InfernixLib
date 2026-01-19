@@ -17,8 +17,8 @@ local Workspace = game:GetService("Workspace")
 -- Variables
 local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local Humanoid = Character:WaitForChild("Humanoid")
-local RootPart = Character:WaitForChild("HumanoidRootPart")
+local Humanoid = Character:FindFirstChildOfClass("Humanoid") or Character:WaitForChild("Humanoid", 5)
+local RootPart = Character:FindFirstChild("HumanoidRootPart") or Character:WaitForChild("HumanoidRootPart", 5)
 
 -- Script States
 local States = {
@@ -147,14 +147,16 @@ PlayerTab:CreateButton({
 PlayerTab:CreateButton({
     Name = "Refresh Character",
     Callback = function()
-        Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-        Humanoid = Character:WaitForChild("Humanoid")
-        RootPart = Character:WaitForChild("HumanoidRootPart")
-        InfernixLib:Notify({
-            Title = "Character Refreshed",
-            Content = "Character references updated",
-            Duration = 3
-        })
+        pcall(function()
+            Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+            Humanoid = Character:WaitForChild("Humanoid", 5)
+            RootPart = Character:WaitForChild("HumanoidRootPart", 5)
+            InfernixLib:Notify({
+                Title = "Character Refreshed",
+                Content = "Character references updated",
+                Duration = 3
+            })
+        end)
     end
 })
 
@@ -404,9 +406,17 @@ VisualsTab:CreateButton({
 -- Misc Tab
 MiscTab:CreateSection("Game Info")
 
-MiscTab:CreateLabel("Game: " .. game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
-MiscTab:CreateLabel("Place ID: " .. game.PlaceId)
-MiscTab:CreateLabel("Players: " .. #Players:GetPlayers() .. "/" .. Players.MaxPlayers)
+local gameName = "Loading..."
+pcall(function()
+    local info = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+    if info and info.Name then
+        gameName = info.Name
+    end
+end)
+
+MiscTab:CreateLabel("Game: " .. gameName)
+MiscTab:CreateLabel("Place ID: " .. tostring(game.PlaceId))
+MiscTab:CreateLabel("Players: " .. tostring(#Players:GetPlayers()) .. "/" .. tostring(Players.MaxPlayers))
 
 MiscTab:CreateSection("Additional Features")
 
@@ -559,17 +569,19 @@ Window:LoadConfig()
 
 -- Character respawn handler
 LocalPlayer.CharacterAdded:Connect(function(char)
-    Character = char
-    Humanoid = char:WaitForChild("Humanoid")
-    RootPart = char:WaitForChild("HumanoidRootPart")
-    
-    -- Reapply settings after respawn
-    if States.Speed then
-        Humanoid.WalkSpeed = States.SpeedValue
-    end
-    if States.JumpPower then
-        Humanoid.JumpPower = States.JumpValue
-    end
+    pcall(function()
+        Character = char
+        Humanoid = char:WaitForChild("Humanoid", 5)
+        RootPart = char:WaitForChild("HumanoidRootPart", 5)
+        
+        -- Reapply settings after respawn
+        if States.Speed and Humanoid then
+            Humanoid.WalkSpeed = States.SpeedValue
+        end
+        if States.JumpPower and Humanoid then
+            Humanoid.JumpPower = States.JumpValue
+        end
+    end)
 end)
 
 print("InfernixLib Example loaded successfully!")
