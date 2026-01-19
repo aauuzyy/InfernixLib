@@ -106,46 +106,126 @@ local function CreateRipple(button, x, y)
     end)
 end
 
--- Themes
+-- Create gradient
+local function CreateGradient(parent, rotation, colors)
+    local gradient = Instance.new("UIGradient")
+    gradient.Rotation = rotation or 0
+    if colors then
+        local colorSequence = {}
+        for i, colorData in ipairs(colors) do
+            table.insert(colorSequence, ColorSequenceKeypoint.new(colorData[1], colorData[2]))
+        end
+        gradient.Color = ColorSequence.new(colorSequence)
+    end
+    gradient.Parent = parent
+    return gradient
+end
+
+-- Create blur effect
+local function CreateBlur(parent, size)
+    local blur = Instance.new("ImageLabel")
+    blur.Name = "Blur"
+    blur.BackgroundTransparency = 1
+    blur.Image = "rbxassetid://8992230677" -- Modern blur texture
+    blur.ImageColor3 = Color3.fromRGB(10, 10, 15)
+    blur.ImageTransparency = 0.3
+    blur.ScaleType = Enum.ScaleType.Slice
+    blur.SliceCenter = Rect.new(100, 100, 100, 100)
+    blur.Size = UDim2.new(1, size or 0, 1, size or 0)
+    blur.Position = UDim2.new(0, -(size or 0)/2, 0, -(size or 0)/2)
+    blur.ZIndex = parent.ZIndex - 1
+    blur.Parent = parent
+    return blur
+end
+
+-- Icon library
+InfernixLib.Icons = {
+    Home = "rbxassetid://10734896206",
+    Settings = "rbxassetid://10734950309",
+    User = "rbxassetid://10747374131",
+    Shield = "rbxassetid://10723434711",
+    Eye = "rbxassetid://10747318871",
+    Gamepad = "rbxassetid://10709790537",
+    Sparkles = "rbxassetid://10709791437",
+    Code = "rbxassetid://10709769841",
+    Info = "rbxassetid://10723434711",
+    Check = "rbxassetid://10709818534",
+    X = "rbxassetid://10747384394"
+}
+
+-- Themes - REDESIGNED with professional colors
 InfernixLib.Themes = {
     Dark = {
-        Background = Color3.fromRGB(20, 20, 25),
-        SecondaryBackground = Color3.fromRGB(25, 25, 30),
-        TertiaryBackground = Color3.fromRGB(30, 30, 35),
-        Text = Color3.fromRGB(240, 240, 240),
-        SubText = Color3.fromRGB(180, 180, 180),
-        Accent = Color3.fromRGB(88, 101, 242),
-        ElementBackground = Color3.fromRGB(35, 35, 40),
-        ElementBorder = Color3.fromRGB(50, 50, 55),
-        Success = Color3.fromRGB(67, 181, 129),
-        Warning = Color3.fromRGB(250, 166, 26),
-        Error = Color3.fromRGB(240, 71, 71)
+        Background = Color3.fromRGB(12, 12, 16),
+        SecondaryBackground = Color3.fromRGB(18, 18, 24),
+        TertiaryBackground = Color3.fromRGB(24, 24, 32),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(160, 160, 180),
+        Accent = Color3.fromRGB(138, 80, 255), -- Purple accent
+        AccentGradient = {
+            Color3.fromRGB(138, 80, 255),
+            Color3.fromRGB(198, 120, 255)
+        },
+        ElementBackground = Color3.fromRGB(20, 20, 28),
+        ElementBorder = Color3.fromRGB(40, 40, 52),
+        ElementHover = Color3.fromRGB(28, 28, 38),
+        Success = Color3.fromRGB(46, 213, 115),
+        Warning = Color3.fromRGB(255, 168, 1),
+        Error = Color3.fromRGB(255, 71, 87)
     },
     Light = {
-        Background = Color3.fromRGB(245, 245, 250),
-        SecondaryBackground = Color3.fromRGB(235, 235, 240),
-        TertiaryBackground = Color3.fromRGB(225, 225, 230),
-        Text = Color3.fromRGB(20, 20, 20),
-        SubText = Color3.fromRGB(100, 100, 100),
-        Accent = Color3.fromRGB(88, 101, 242),
+        Background = Color3.fromRGB(250, 250, 255),
+        SecondaryBackground = Color3.fromRGB(242, 242, 250),
+        TertiaryBackground = Color3.fromRGB(235, 235, 245),
+        Text = Color3.fromRGB(20, 20, 30),
+        SubText = Color3.fromRGB(110, 110, 130),
+        Accent = Color3.fromRGB(138, 80, 255),
+        AccentGradient = {
+            Color3.fromRGB(138, 80, 255),
+            Color3.fromRGB(198, 120, 255)
+        },
         ElementBackground = Color3.fromRGB(255, 255, 255),
-        ElementBorder = Color3.fromRGB(200, 200, 205),
-        Success = Color3.fromRGB(67, 181, 129),
-        Warning = Color3.fromRGB(250, 166, 26),
-        Error = Color3.fromRGB(240, 71, 71)
+        ElementBorder = Color3.fromRGB(225, 225, 235),
+        ElementHover = Color3.fromRGB(245, 245, 252),
+        Success = Color3.fromRGB(46, 213, 115),
+        Warning = Color3.fromRGB(255, 168, 1),
+        Error = Color3.fromRGB(255, 71, 87)
     },
-    Ocean = {
-        Background = Color3.fromRGB(15, 25, 35),
-        SecondaryBackground = Color3.fromRGB(20, 30, 40),
-        TertiaryBackground = Color3.fromRGB(25, 35, 45),
-        Text = Color3.fromRGB(240, 248, 255),
-        SubText = Color3.fromRGB(160, 180, 200),
-        Accent = Color3.fromRGB(52, 152, 219),
-        ElementBackground = Color3.fromRGB(30, 40, 50),
-        ElementBorder = Color3.fromRGB(45, 55, 65),
-        Success = Color3.fromRGB(46, 204, 113),
-        Warning = Color3.fromRGB(241, 196, 15),
-        Error = Color3.fromRGB(231, 76, 60)
+    Midnight = {
+        Background = Color3.fromRGB(8, 12, 20),
+        SecondaryBackground = Color3.fromRGB(12, 18, 28),
+        TertiaryBackground = Color3.fromRGB(16, 24, 36),
+        Text = Color3.fromRGB(220, 230, 255),
+        SubText = Color3.fromRGB(140, 160, 200),
+        Accent = Color3.fromRGB(99, 179, 255), -- Cyan accent
+        AccentGradient = {
+            Color3.fromRGB(99, 179, 255),
+            Color3.fromRGB(139, 199, 255)
+        },
+        ElementBackground = Color3.fromRGB(14, 20, 32),
+        ElementBorder = Color3.fromRGB(28, 40, 60),
+        ElementHover = Color3.fromRGB(20, 28, 44),
+        Success = Color3.fromRGB(82, 196, 26),
+        Warning = Color3.fromRGB(250, 173, 20),
+        Error = Color3.fromRGB(255, 77, 79)
+    },
+    Sunset = {
+        Background = Color3.fromRGB(20, 10, 15),
+        SecondaryBackground = Color3.fromRGB(28, 14, 20),
+        TertiaryBackground = Color3.fromRGB(36, 18, 26),
+        Text = Color3.fromRGB(255, 240, 245),
+        SubText = Color3.fromRGB(200, 160, 180),
+        Accent = Color3.fromRGB(255, 107, 129), -- Pink/Red accent
+        AccentGradient = {
+            Color3.fromRGB(255, 107, 129),
+            Color3.fromRGB(255, 142, 161)
+        },
+        ElementBackground = Color3.fromRGB(24, 12, 18),
+        ElementBorder = Color3.fromRGB(48, 24, 36),
+        ElementHover = Color3.fromRGB(34, 16, 25),
+        Success = Color3.fromRGB(46, 213, 115),
+        Warning = Color3.fromRGB(255, 193, 7),
+        Error = Color3.fromRGB(255, 71, 87)
     }
 }
 
@@ -185,124 +265,193 @@ function InfernixLib:CreateWindow(config)
     -- Main Frame
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 600, 0, 450)
-    MainFrame.Position = UDim2.new(0.5, -300, 0.5, -225)
+    MainFrame.Size = UDim2.new(0, 650, 0, 480)
+    MainFrame.Position = UDim2.new(0.5, -325, 0.5, -240)
     MainFrame.BackgroundColor3 = Window.Theme.Background
     MainFrame.BorderSizePixel = 0
-    MainFrame.ClipsDescendants = true
+    MainFrame.ClipsDescendants = false
     MainFrame.Parent = ScreenGui
     
     local MainCorner = Instance.new("UICorner")
-    MainCorner.CornerRadius = UDim.new(0, 10)
+    MainCorner.CornerRadius = UDim.new(0, 12)
     MainCorner.Parent = MainFrame
     
-    local MainStroke = Instance.new("UIStroke")
-    MainStroke.Color = Window.Theme.ElementBorder
-    MainStroke.Thickness = 1
-    MainStroke.Transparency = 0.5
-    MainStroke.Parent = MainFrame
-    
-    -- Drop shadow
+    -- Modern shadow with blur
     local Shadow = Instance.new("ImageLabel")
     Shadow.Name = "Shadow"
     Shadow.BackgroundTransparency = 1
-    Shadow.Position = UDim2.new(0, -15, 0, -15)
-    Shadow.Size = UDim2.new(1, 30, 1, 30)
-    Shadow.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+    Shadow.Position = UDim2.new(0, -20, 0, -20)
+    Shadow.Size = UDim2.new(1, 40, 1, 40)
+    Shadow.Image = "rbxassetid://8992230677"
     Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    Shadow.ImageTransparency = 0.7
+    Shadow.ImageTransparency = 0.5
+    Shadow.ScaleType = Enum.ScaleType.Slice
+    Shadow.SliceCenter = Rect.new(100, 100, 100, 100)
     Shadow.ZIndex = 0
     Shadow.Parent = MainFrame
+    
+    -- Accent glow on top
+    local AccentGlow = Instance.new("Frame")
+    AccentGlow.Name = "AccentGlow"
+    AccentGlow.Size = UDim2.new(1, 0, 0, 2)
+    AccentGlow.Position = UDim2.new(0, 0, 0, 0)
+    AccentGlow.BackgroundColor3 = Window.Theme.Accent
+    AccentGlow.BorderSizePixel = 0
+    AccentGlow.ZIndex = 10
+    AccentGlow.Parent = MainFrame
+    
+    CreateGradient(AccentGlow, 90, {
+        {0, Window.Theme.AccentGradient[1]},
+        {1, Window.Theme.AccentGradient[2]}
+    })
+    
+    local GlowCorner = Instance.new("UICorner")
+    GlowCorner.CornerRadius = UDim.new(0, 12)
+    GlowCorner.Parent = AccentGlow
     
     Window.MainFrame = MainFrame
     
     -- Top Bar
     local TopBar = Instance.new("Frame")
     TopBar.Name = "TopBar"
-    TopBar.Size = UDim2.new(1, 0, 0, 45)
-    TopBar.BackgroundColor3 = Window.Theme.SecondaryBackground
+    TopBar.Size = UDim2.new(1, 0, 0, 52)
+    TopBar.BackgroundTransparency = 1
     TopBar.BorderSizePixel = 0
     TopBar.Parent = MainFrame
     
-    local TopBarCorner = Instance.new("UICorner")
-    TopBarCorner.CornerRadius = UDim.new(0, 10)
-    TopBarCorner.Parent = TopBar
+    -- Logo/Icon
+    local Logo = Instance.new("ImageLabel")
+    Logo.Name = "Logo"
+    Logo.Size = UDim2.new(0, 24, 0, 24)
+    Logo.Position = UDim2.new(0, 18, 0, 14)
+    Logo.BackgroundTransparency = 1
+    Logo.Image = Window.Icon or InfernixLib.Icons.Sparkles
+    Logo.ImageColor3 = Window.Theme.Accent
+    Logo.Parent = TopBar
     
-    -- Fix corner at bottom
-    local TopBarFix = Instance.new("Frame")
-    TopBarFix.Size = UDim2.new(1, 0, 0, 10)
-    TopBarFix.Position = UDim2.new(0, 0, 1, -10)
-    TopBarFix.BackgroundColor3 = Window.Theme.SecondaryBackground
-    TopBarFix.BorderSizePixel = 0
-    TopBarFix.Parent = TopBar
-    
-    -- Title
+    -- Title with gradient
     local Title = Instance.new("TextLabel")
     Title.Name = "Title"
-    Title.Size = UDim2.new(1, -100, 1, 0)
-    Title.Position = UDim2.new(0, 15, 0, 0)
+    Title.Size = UDim2.new(1, -140, 1, 0)
+    Title.Position = UDim2.new(0, 50, 0, 0)
     Title.BackgroundTransparency = 1
     Title.Text = Window.Name
     Title.TextColor3 = Window.Theme.Text
-    Title.TextSize = 18
+    Title.TextSize = 17
     Title.Font = Enum.Font.GothamBold
     Title.TextXAlignment = Enum.TextXAlignment.Left
     Title.Parent = TopBar
     
+    CreateGradient(Title, 0, {
+        {0, Window.Theme.AccentGradient[1]},
+        {1, Window.Theme.AccentGradient[2]}
+    })
+    
+    -- Minimize Button
+    local MinimizeButton = Instance.new("TextButton")
+    MinimizeButton.Name = "MinimizeButton"
+    MinimizeButton.Size = UDim2.new(0, 36, 0, 36)
+    MinimizeButton.Position = UDim2.new(1, -84, 0, 8)
+    MinimizeButton.BackgroundColor3 = Window.Theme.ElementBackground
+    MinimizeButton.BackgroundTransparency = 0.4
+    MinimizeButton.BorderSizePixel = 0
+    MinimizeButton.Text = ""
+    MinimizeButton.AutoButtonColor = false
+    MinimizeButton.Parent = TopBar
+    
+    local MinimizeCorner = Instance.new("UICorner")
+    MinimizeCorner.CornerRadius = UDim.new(0, 8)
+    MinimizeCorner.Parent = MinimizeButton
+    
+    local MinimizeIcon = Instance.new("TextLabel")
+    MinimizeIcon.Size = UDim2.new(1, 0, 1, 0)
+    MinimizeIcon.BackgroundTransparency = 1
+    MinimizeIcon.Text = "—"
+    MinimizeIcon.TextColor3 = Window.Theme.SubText
+    MinimizeIcon.TextSize = 18
+    MinimizeIcon.Font = Enum.Font.GothamBold
+    MinimizeIcon.Parent = MinimizeButton
+    
+    MinimizeButton.MouseButton1Click:Connect(function()
+        Window:Toggle()
+    end)
+    
+    MinimizeButton.MouseEnter:Connect(function()
+        Tween(MinimizeButton, {BackgroundTransparency = 0})
+        Tween(MinimizeIcon, {TextColor3 = Window.Theme.Text})
+    end)
+    
+    MinimizeButton.MouseLeave:Connect(function()
+        Tween(MinimizeButton, {BackgroundTransparency = 0.4})
+        Tween(MinimizeIcon, {TextColor3 = Window.Theme.SubText})
+    end)
+    
     -- Close Button
     local CloseButton = Instance.new("TextButton")
     CloseButton.Name = "CloseButton"
-    CloseButton.Size = UDim2.new(0, 35, 0, 35)
-    CloseButton.Position = UDim2.new(1, -40, 0.5, -17.5)
+    CloseButton.Size = UDim2.new(0, 36, 0, 36)
+    CloseButton.Position = UDim2.new(1, -42, 0, 8)
     CloseButton.BackgroundColor3 = Window.Theme.ElementBackground
+    CloseButton.BackgroundTransparency = 0.4
     CloseButton.BorderSizePixel = 0
-    CloseButton.Text = "×"
-    CloseButton.TextColor3 = Window.Theme.Text
-    CloseButton.TextSize = 24
-    CloseButton.Font = Enum.Font.GothamBold
+    CloseButton.Text = ""
+    CloseButton.AutoButtonColor = false
     CloseButton.Parent = TopBar
     
     local CloseCorner = Instance.new("UICorner")
     CloseCorner.CornerRadius = UDim.new(0, 8)
     CloseCorner.Parent = CloseButton
     
+    local CloseIcon = Instance.new("TextLabel")
+    CloseIcon.Size = UDim2.new(1, 0, 1, 0)
+    CloseIcon.BackgroundTransparency = 1
+    CloseIcon.Text = "×"
+    CloseIcon.TextColor3 = Window.Theme.SubText
+    CloseIcon.TextSize = 22
+    CloseIcon.Font = Enum.Font.GothamBold
+    CloseIcon.Parent = CloseButton
+    
     CloseButton.MouseButton1Click:Connect(function()
         Window:Toggle()
     end)
     
     CloseButton.MouseEnter:Connect(function()
-        Tween(CloseButton, {BackgroundColor3 = Window.Theme.Error})
+        Tween(CloseButton, {BackgroundColor3 = Window.Theme.Error, BackgroundTransparency = 0})
+        Tween(CloseIcon, {TextColor3 = Window.Theme.Text})
     end)
     
     CloseButton.MouseLeave:Connect(function()
-        Tween(CloseButton, {BackgroundColor3 = Window.Theme.ElementBackground})
+        Tween(CloseButton, {BackgroundColor3 = Window.Theme.ElementBackground, BackgroundTransparency = 0.4})
+        Tween(CloseIcon, {TextColor3 = Window.Theme.SubText})
     end)
     
     MakeDraggable(MainFrame, TopBar)
     
     -- Tab Container
-    local TabContainer = Instance.new("Frame")
+    local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Name = "TabContainer"
-    TabContainer.Size = UDim2.new(0, 160, 1, -55)
-    TabContainer.Position = UDim2.new(0, 10, 0, 50)
+    TabContainer.Size = UDim2.new(0, 170, 1, -68)
+    TabContainer.Position = UDim2.new(0, 12, 0, 58)
     TabContainer.BackgroundColor3 = Window.Theme.SecondaryBackground
     TabContainer.BorderSizePixel = 0
+    TabContainer.ScrollBarThickness = 0
+    TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+    TabContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    TabContainer.ScrollingDirection = Enum.ScrollingDirection.Y
     TabContainer.Parent = MainFrame
     
     local TabCorner = Instance.new("UICorner")
-    TabCorner.CornerRadius = UDim.new(0, 8)
+    TabCorner.CornerRadius = UDim.new(0, 10)
     TabCorner.Parent = TabContainer
     
     local TabList = Instance.new("UIListLayout")
-    TabList.Padding = UDim.new(0, 5)
+    TabList.Padding = UDim.new(0, 6)
     TabList.SortOrder = Enum.SortOrder.LayoutOrder
     TabList.Parent = TabContainer
     
     local TabPadding = Instance.new("UIPadding")
-    TabPadding.PaddingTop = UDim.new(0, 8)
-    TabPadding.PaddingBottom = UDim.new(0, 8)
-    TabPadding.PaddingLeft = UDim.new(0, 8)
-    TabPadding.PaddingRight = UDim.new(0, 8)
+    TabPadding.PaddingLeft = UDim.new(0, 10)
+    TabPadding.PaddingRight = UDim.new(0, 10)
     TabPadding.Parent = TabContainer
     
     Window.TabContainer = TabContainer
@@ -310,22 +459,24 @@ function InfernixLib:CreateWindow(config)
     -- Content Container
     local ContentContainer = Instance.new("Frame")
     ContentContainer.Name = "ContentContainer"
-    ContentContainer.Size = UDim2.new(1, -185, 1, -55)
-    ContentContainer.Position = UDim2.new(0, 175, 0, 50)
+    ContentContainer.Size = UDim2.new(1, -200, 1, -68)
+    ContentContainer.Position = UDim2.new(0, 188, 0, 58)
     ContentContainer.BackgroundTransparency = 1
     ContentContainer.BorderSizePixel = 0
+    ContentContainer.ClipsDescendants = true
     ContentContainer.Parent = MainFrame
     
     Window.ContentContainer = ContentContainer
     
-    -- Toggle UI
+    -- Toggle UI with better animation
     function Window:Toggle()
         self.Visible = not self.Visible
         if self.Visible then
             MainFrame.Visible = true
-            Tween(MainFrame, {Size = UDim2.new(0, 600, 0, 450)}, 0.3, Enum.EasingStyle.Back)
+            MainFrame.Size = UDim2.new(0, 650, 0, 0)
+            Tween(MainFrame, {Size = UDim2.new(0, 650, 0, 480)}, 0.4, Enum.EasingStyle.Quint)
         else
-            Tween(MainFrame, {Size = UDim2.new(0, 600, 0, 0)}, 0.3, Enum.EasingStyle.Back).Completed:Connect(function()
+            Tween(MainFrame, {Size = UDim2.new(0, 650, 0, 0)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
                 MainFrame.Visible = false
             end)
         end
@@ -423,24 +574,67 @@ function InfernixLib:CreateWindow(config)
             Window = self
         }
         
-        -- Tab Button
+        -- Tab Button with modern design
         local TabButton = Instance.new("TextButton")
         TabButton.Name = name
-        TabButton.Size = UDim2.new(1, 0, 0, 40)
+        TabButton.Size = UDim2.new(1, 0, 0, 44)
         TabButton.BackgroundColor3 = Window.Theme.ElementBackground
+        TabButton.BackgroundTransparency = 1
         TabButton.BorderSizePixel = 0
-        TabButton.Text = "  " .. name
-        TabButton.TextColor3 = Window.Theme.SubText
-        TabButton.TextSize = 14
-        TabButton.Font = Enum.Font.Gotham
-        TabButton.TextXAlignment = Enum.TextXAlignment.Left
+        TabButton.Text = ""
+        TabButton.AutoButtonColor = false
+        TabButton.ClipsDescendants = true
         TabButton.Parent = TabContainer
         
         local TabButtonCorner = Instance.new("UICorner")
-        TabButtonCorner.CornerRadius = UDim.new(0, 6)
+        TabButtonCorner.CornerRadius = UDim.new(0, 8)
         TabButtonCorner.Parent = TabButton
         
+        -- Active indicator (left bar)
+        local ActiveBar = Instance.new("Frame")
+        ActiveBar.Name = "ActiveBar"
+        ActiveBar.Size = UDim2.new(0, 0, 0, 24)
+        ActiveBar.Position = UDim2.new(0, 0, 0.5, -12)
+        ActiveBar.BackgroundColor3 = Window.Theme.Accent
+        ActiveBar.BorderSizePixel = 0
+        ActiveBar.Parent = TabButton
+        
+        local BarCorner = Instance.new("UICorner")
+        BarCorner.CornerRadius = UDim.new(0, 4)
+        BarCorner.Parent = ActiveBar
+        
+        CreateGradient(ActiveBar, 90, {
+            {0, Window.Theme.AccentGradient[1]},
+            {1, Window.Theme.AccentGradient[2]}
+        })
+        
+        -- Tab Icon
+        local TabIcon = Instance.new("ImageLabel")
+        TabIcon.Name = "Icon"
+        TabIcon.Size = UDim2.new(0, 20, 0, 20)
+        TabIcon.Position = UDim2.new(0, 12, 0.5, -10)
+        TabIcon.BackgroundTransparency = 1
+        TabIcon.Image = icon or InfernixLib.Icons.Home
+        TabIcon.ImageColor3 = Window.Theme.SubText
+        TabIcon.Parent = TabButton
+        
+        -- Tab Text
+        local TabText = Instance.new("TextLabel")
+        TabText.Name = "Label"
+        TabText.Size = UDim2.new(1, -45, 1, 0)
+        TabText.Position = UDim2.new(0, 40, 0, 0)
+        TabText.BackgroundTransparency = 1
+        TabText.Text = name
+        TabText.TextColor3 = Window.Theme.SubText
+        TabText.TextSize = 13
+        TabText.Font = Enum.Font.GothamMedium
+        TabText.TextXAlignment = Enum.TextXAlignment.Left
+        TabText.Parent = TabButton
+        
         Tab.Button = TabButton
+        Tab.Icon = TabIcon
+        Tab.Text = TabText
+        Tab.ActiveBar = ActiveBar
         
         -- Tab Content
         local TabContent = Instance.new("ScrollingFrame")
@@ -456,32 +650,36 @@ function InfernixLib:CreateWindow(config)
         TabContent.Parent = ContentContainer
         
         local ContentList = Instance.new("UIListLayout")
-        ContentList.Padding = UDim.new(0, 8)
+        ContentList.Padding = UDim.new(0, 10)
         ContentList.SortOrder = Enum.SortOrder.LayoutOrder
         ContentList.Parent = TabContent
         
         ContentList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            TabContent.CanvasSize = UDim2.new(0, 0, 0, ContentList.AbsoluteContentSize.Y + 10)
+            TabContent.CanvasSize = UDim2.new(0, 0, 0, ContentList.AbsoluteContentSize.Y + 15)
         end)
         
         local ContentPadding = Instance.new("UIPadding")
-        ContentPadding.PaddingTop = UDim.new(0, 5)
-        ContentPadding.PaddingBottom = UDim.new(0, 5)
-        ContentPadding.PaddingRight = UDim.new(0, 5)
+        ContentPadding.PaddingTop = UDim.new(0, 8)
+        ContentPadding.PaddingBottom = UDim.new(0, 8)
+        ContentPadding.PaddingRight = UDim.new(0, 8)
         ContentPadding.Parent = TabContent
         
         Tab.Content = TabContent
         
-        -- Select tab
+        -- Select tab with modern animations
         local function SelectTab()
             for _, tab in pairs(Window.Tabs) do
-                tab.Button.BackgroundColor3 = Window.Theme.ElementBackground
-                tab.Button.TextColor3 = Window.Theme.SubText
+                Tween(tab.Button, {BackgroundTransparency = 1})
+                Tween(tab.Icon, {ImageColor3 = Window.Theme.SubText})
+                Tween(tab.Text, {TextColor3 = Window.Theme.SubText})
+                Tween(tab.ActiveBar, {Size = UDim2.new(0, 0, 0, 24)}, 0.2)
                 tab.Content.Visible = false
             end
             
-            TabButton.BackgroundColor3 = Window.Theme.Accent
-            TabButton.TextColor3 = Window.Theme.Text
+            Tween(TabButton, {BackgroundTransparency = 0})
+            Tween(TabIcon, {ImageColor3 = Window.Theme.Accent})
+            Tween(TabText, {TextColor3 = Window.Theme.Text})
+            Tween(ActiveBar, {Size = UDim2.new(0, 3, 0, 24)}, 0.3, Enum.EasingStyle.Back)
             TabContent.Visible = true
             Window.CurrentTab = Tab
         end
@@ -490,13 +688,17 @@ function InfernixLib:CreateWindow(config)
         
         TabButton.MouseEnter:Connect(function()
             if Window.CurrentTab ~= Tab then
-                Tween(TabButton, {BackgroundColor3 = Window.Theme.TertiaryBackground})
+                Tween(TabButton, {BackgroundTransparency = 0.7})
+                Tween(TabIcon, {ImageColor3 = Window.Theme.Text})
+                Tween(TabText, {TextColor3 = Window.Theme.Text})
             end
         end)
         
         TabButton.MouseLeave:Connect(function()
             if Window.CurrentTab ~= Tab then
-                Tween(TabButton, {BackgroundColor3 = Window.Theme.ElementBackground})
+                Tween(TabButton, {BackgroundTransparency = 1})
+                Tween(TabIcon, {ImageColor3 = Window.Theme.SubText})
+                Tween(TabText, {TextColor3 = Window.Theme.SubText})
             end
         end)
         
