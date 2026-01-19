@@ -128,8 +128,9 @@ local function CreateAnimatedGradient(parent, colors, speed)
     
     -- Convert colors array to color sequence keypoints
     local colorSequence = {}
-    for i, color in ipairs(colors) do
-        local position = (i - 1) / (#colors - 1)
+    for i, colorData in ipairs(colors) do
+        local position = colorData[1]
+        local color = colorData[2]
         table.insert(colorSequence, ColorSequenceKeypoint.new(position, color))
     end
     gradient.Color = ColorSequence.new(colorSequence)
