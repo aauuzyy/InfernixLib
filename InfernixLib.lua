@@ -284,7 +284,7 @@ InfernixLib.Themes = {
         TertiaryBackground = Color3.fromRGB(15, 22, 36),
         Text = Color3.fromRGB(220, 235, 255),
         SubText = Color3.fromRGB(140, 170, 210),
-        Accent = Color3.fromRGB(59, 130, 246), // Blue
+        Accent = Color3.fromRGB(59, 130, 246), -- Blue
         AccentGradient = {
             Color3.fromRGB(59, 130, 246),
             Color3.fromRGB(99, 102, 241),
@@ -303,7 +303,7 @@ InfernixLib.Themes = {
         TertiaryBackground = Color3.fromRGB(32, 16, 26),
         Text = Color3.fromRGB(255, 240, 250),
         SubText = Color3.fromRGB(210, 170, 195),
-        Accent = Color3.fromRGB(244, 63, 94), // Pink/Red
+        Accent = Color3.fromRGB(244, 63, 94), -- Pink/Red
         AccentGradient = {
             Color3.fromRGB(244, 63, 94),
             Color3.fromRGB(251, 113, 133),
