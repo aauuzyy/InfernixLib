@@ -354,21 +354,21 @@ function InfernixLib:CreateWindow(config)
     -- Main Frame with transparency for acrylic effect
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 680, 0, 500)
-    MainFrame.Position = UDim2.new(0.5, -340, 0.5, -250)
+    MainFrame.Size = UDim2.new(0, 850, 0, 480)
+    MainFrame.Position = UDim2.new(0.5, -425, 0.5, -240)
     MainFrame.BackgroundTransparency = 1
     MainFrame.BorderSizePixel = 0
     MainFrame.ClipsDescendants = false
     MainFrame.Visible = false
     MainFrame.Parent = ScreenGui
     
-    -- Clean background (WindUI style)
+    -- Clean background with blur (WindUI style)
     local Background = Instance.new("Frame")
     Background.Name = "Background"
     Background.Size = UDim2.new(1, 0, 1, 0)
     Background.Position = UDim2.new(0, 0, 0, 0)
     Background.BackgroundColor3 = Window.Theme.Background
-    Background.BackgroundTransparency = 0.05
+    Background.BackgroundTransparency = 0.25
     Background.BorderSizePixel = 0
     Background.ZIndex = 0
     Background.Parent = MainFrame
@@ -376,6 +376,23 @@ function InfernixLib:CreateWindow(config)
     local BackgroundCorner = Instance.new("UICorner")
     BackgroundCorner.CornerRadius = UDim.new(0, 12)
     BackgroundCorner.Parent = Background
+    
+    -- Add blur effect
+    local BlurEffect = Instance.new("ImageLabel")
+    BlurEffect.Name = "BlurEffect"
+    BlurEffect.Size = UDim2.new(1, 0, 1, 0)
+    BlurEffect.BackgroundTransparency = 1
+    BlurEffect.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+    BlurEffect.ImageColor3 = Window.Theme.Background
+    BlurEffect.ImageTransparency = 0.3
+    BlurEffect.ScaleType = Enum.ScaleType.Tile
+    BlurEffect.TileSize = UDim2.new(0, 100, 0, 100)
+    BlurEffect.ZIndex = 1
+    BlurEffect.Parent = Background
+    
+    local BlurCorner = Instance.new("UICorner")
+    BlurCorner.CornerRadius = UDim.new(0, 12)
+    BlurCorner.Parent = BlurEffect
     
     -- Subtle border
     local BorderStroke = Instance.new("UIStroke")
@@ -527,7 +544,7 @@ function InfernixLib:CreateWindow(config)
     -- Tab Container - clean, professional
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Name = "TabContainer"
-    TabContainer.Size = UDim2.new(0, 180, 1, -68)
+    TabContainer.Size = UDim2.new(0, 200, 1, -68)
     TabContainer.Position = UDim2.new(0, 10, 0, 58)
     TabContainer.BackgroundColor3 = Window.Theme.SecondaryBackground
     TabContainer.BackgroundTransparency = 0.3
@@ -568,8 +585,8 @@ function InfernixLib:CreateWindow(config)
     -- Content Container
     local ContentContainer = Instance.new("Frame")
     ContentContainer.Name = "ContentContainer"
-    ContentContainer.Size = UDim2.new(1, -208, 1, -68)
-    ContentContainer.Position = UDim2.new(0, 198, 0, 58)
+    ContentContainer.Size = UDim2.new(1, -228, 1, -68)
+    ContentContainer.Position = UDim2.new(0, 218, 0, 58)
     ContentContainer.BackgroundTransparency = 1
     ContentContainer.BorderSizePixel = 0
     ContentContainer.ClipsDescendants = true
@@ -583,10 +600,10 @@ function InfernixLib:CreateWindow(config)
         self.Visible = not self.Visible
         if self.Visible then
             MainFrame.Visible = true
-            MainFrame.Size = UDim2.new(0, 680, 0, 0)
-            Tween(MainFrame, {Size = UDim2.new(0, 680, 0, 500)}, 0.4, Enum.EasingStyle.Quint)
+            MainFrame.Size = UDim2.new(0, 850, 0, 0)
+            Tween(MainFrame, {Size = UDim2.new(0, 850, 0, 480)}, 0.4, Enum.EasingStyle.Quint)
         else
-            Tween(MainFrame, {Size = UDim2.new(0, 680, 0, 0)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
+            Tween(MainFrame, {Size = UDim2.new(0, 850, 0, 0)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
                 MainFrame.Visible = false
             end)
         end
@@ -599,11 +616,11 @@ function InfernixLib:CreateWindow(config)
             -- Hide content but keep titlebar visible
             TabContainer.Visible = false
             ContentContainer.Visible = false
-            Tween(MainFrame, {Size = UDim2.new(0, 680, 0, 56)}, 0.3, Enum.EasingStyle.Quint)
+            Tween(MainFrame, {Size = UDim2.new(0, 850, 0, 56)}, 0.3, Enum.EasingStyle.Quint)
             Tween(MinimizeIcon, {Rotation = 180})
         else
             -- Restore full window
-            Tween(MainFrame, {Size = UDim2.new(0, 680, 0, 500)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
+            Tween(MainFrame, {Size = UDim2.new(0, 850, 0, 480)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
                 TabContainer.Visible = true
                 ContentContainer.Visible = true
             end)
