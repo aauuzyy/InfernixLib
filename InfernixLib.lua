@@ -148,32 +148,9 @@ local function CreateAnimatedGradient(parent, colors, speed)
     return gradient
 end
 
--- Create acrylic blur effect
-local function CreateAcrylicBlur(parent)
-    local blurFrame = Instance.new("Frame")
-    blurFrame.Name = "AcrylicBlur"
-    blurFrame.Size = UDim2.new(1, 0, 1, 0)
-    blurFrame.Position = UDim2.new(0, 0, 0, 0)
-    blurFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
-    blurFrame.BackgroundTransparency = 0.3
-    blurFrame.BorderSizePixel = 0
-    blurFrame.ZIndex = 1
-    blurFrame.Parent = parent
-    
-    -- Noise texture for acrylic effect
-    local noise = Instance.new("ImageLabel")
-    noise.Size = UDim2.new(1, 0, 1, 0)
-    noise.BackgroundTransparency = 1
-    noise.Image = "rbxassetid://4819794683" -- Subtle noise texture
-    noise.ImageTransparency = 0.95
-    noise.ImageColor3 = Color3.fromRGB(255, 255, 255)
-    noise.ScaleType = Enum.ScaleType.Tile
-    noise.TileSize = UDim2.new(0, 100, 0, 100)
-    noise.ZIndex = 1
-    noise.Parent = blurFrame
-    
-    return blurFrame
-end
+-- Load Acrylic system from separate modules
+local Acrylic = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_REPO/InfernixLib/main/Acrylic/init.lua"))()
+-- For local testing: local Acrylic = require(script.Parent.Acrylic)
 
 -- Create animated particles
 local function CreateParticles(parent, count, color)
@@ -362,7 +339,7 @@ function InfernixLib:CreateWindow(config)
     MainFrame.Visible = false
     MainFrame.Parent = ScreenGui
     
-    -- Professional acrylic background (Fluent-style with REAL blur)
+    -- Professional acrylic background (Fluent-style with REAL 3D blur)
     local Background = Instance.new("Frame")
     Background.Name = "Background"
     Background.Size = UDim2.new(1, 0, 1, 0)
@@ -377,10 +354,11 @@ function InfernixLib:CreateWindow(config)
     BackgroundCorner.CornerRadius = UDim.new(0, 12)
     BackgroundCorner.Parent = Background
     
-    -- REAL Blur Effect (BackdropBlur)
-    local BlurEffect = Instance.new("BlurEffect")
-    BlurEffect.Size = 24
-    BlurEffect.Parent = game:GetService("Lighting")
+    -- Create REAL 3D acrylic blur for the background
+    local AcrylicBlur = Acrylic.AcrylicBlur(0.001)
+    AcrylicBlur.Frame.Parent = Background
+    AcrylicBlur.AddParent(MainFrame)
+    Window.AcrylicBlur = AcrylicBlur
     
     -- Acrylic overlay layer
     local AcrylicBlur = Instance.new("Frame")
@@ -413,7 +391,7 @@ function InfernixLib:CreateWindow(config)
     NoiseCorner.CornerRadius = UDim.new(0, 12)
     NoiseCorner.Parent = NoiseTexture
     
-    Window.BlurEffect = BlurEffect
+    Window.BlurEffect = nil -- No more fake Lighting blur
     
     -- Premium border with subtle glow
     local BorderStroke = Instance.new("UIStroke")
