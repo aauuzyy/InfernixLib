@@ -524,9 +524,9 @@ function InfernixLib:CreateWindow(config)
     -- Premium border with subtle glow
     local BorderStroke = Instance.new("UIStroke")
     BorderStroke.Color = Color3.fromRGB(120, 120, 120)
-    BorderStroke.Thickness = 1
+    BorderStroke.Thickness = 2
     BorderStroke.Transparency = 0.6
-    BorderStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    BorderStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
     BorderStroke.Parent = Background
     
     Window.MainFrame = MainFrame
