@@ -362,54 +362,28 @@ function InfernixLib:CreateWindow(config)
     MainFrame.Visible = false
     MainFrame.Parent = ScreenGui
     
-    -- Frosted glass acrylic background (Windows 11 style)
-    local GradientBG = Instance.new("Frame")
-    GradientBG.Name = "GradientBG"
-    GradientBG.Size = UDim2.new(1, 0, 1, 0)
-    GradientBG.Position = UDim2.new(0, 0, 0, 0)
-    GradientBG.BackgroundColor3 = Window.Theme.Background
-    GradientBG.BackgroundTransparency = 0.15
-    GradientBG.BorderSizePixel = 0
-    GradientBG.ZIndex = 0
-    GradientBG.Parent = MainFrame
+    -- Clean background (WindUI style)
+    local Background = Instance.new("Frame")
+    Background.Name = "Background"
+    Background.Size = UDim2.new(1, 0, 1, 0)
+    Background.Position = UDim2.new(0, 0, 0, 0)
+    Background.BackgroundColor3 = Window.Theme.Background
+    Background.BackgroundTransparency = 0.05
+    Background.BorderSizePixel = 0
+    Background.ZIndex = 0
+    Background.Parent = MainFrame
     
-    local GradientCorner = Instance.new("UICorner")
-    GradientCorner.CornerRadius = UDim.new(0, 8)
-    GradientCorner.Parent = GradientBG
+    local BackgroundCorner = Instance.new("UICorner")
+    BackgroundCorner.CornerRadius = UDim.new(0, 12)
+    BackgroundCorner.Parent = Background
     
-    -- Subtle border (Windows 11 style)
+    -- Subtle border
     local BorderStroke = Instance.new("UIStroke")
-    BorderStroke.Color = Color3.fromRGB(255, 255, 255)
+    BorderStroke.Color = Color3.fromRGB(80, 80, 80)
     BorderStroke.Thickness = 1
-    BorderStroke.Transparency = 0.9
+    BorderStroke.Transparency = 0.7
     BorderStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    BorderStroke.Parent = GradientBG
-    
-    -- Enhanced acrylic blur effect
-    local AcrylicLayer = Instance.new("Frame")
-    AcrylicLayer.Name = "AcrylicLayer"
-    AcrylicLayer.Size = UDim2.new(1, 0, 1, 0)
-    AcrylicLayer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    AcrylicLayer.BackgroundTransparency = 0.95
-    AcrylicLayer.BorderSizePixel = 0
-    AcrylicLayer.ZIndex = 1
-    AcrylicLayer.Parent = GradientBG
-    
-    local AcrylicCorner = Instance.new("UICorner")
-    AcrylicCorner.CornerRadius = UDim.new(0, 8)
-    AcrylicCorner.Parent = AcrylicLayer
-    
-    -- Noise texture for frosted glass effect
-    local NoiseTexture = Instance.new("ImageLabel")
-    NoiseTexture.Size = UDim2.new(1, 0, 1, 0)
-    NoiseTexture.BackgroundTransparency = 1
-    NoiseTexture.Image = "rbxassetid://4819794683"
-    NoiseTexture.ImageTransparency = 0.97
-    NoiseTexture.ImageColor3 = Color3.fromRGB(255, 255, 255)
-    NoiseTexture.ScaleType = Enum.ScaleType.Tile
-    NoiseTexture.TileSize = UDim2.new(0, 128, 0, 128)
-    NoiseTexture.ZIndex = 2
-    NoiseTexture.Parent = GradientBG
+    BorderStroke.Parent = Background
     
     -- Shadow with blur
     local Shadow = Instance.new("ImageLabel")
@@ -436,27 +410,18 @@ function InfernixLib:CreateWindow(config)
     TopBar.ZIndex = 10
     TopBar.Parent = MainFrame
     
-    -- Logo/Icon with animation
+    -- Logo - no rotation animation
     local Logo = Instance.new("ImageLabel")
     Logo.Name = "Logo"
-    Logo.Size = UDim2.new(0, 28, 0, 28)
-    Logo.Position = UDim2.new(0, 20, 0, 14)
+    Logo.Size = UDim2.new(0, 22, 0, 22)
+    Logo.Position = UDim2.new(0, 20, 0, 17)
     Logo.BackgroundTransparency = 1
     Logo.Image = Window.Icon or InfernixLib.Icons.Sparkles
     Logo.ImageColor3 = Window.Theme.Accent
     Logo.ZIndex = 10
     Logo.Parent = TopBar
     
-    -- Animate logo
-    task.spawn(function()
-        while Logo and Logo.Parent do
-            Tween(Logo, {Rotation = 360}, 4, Enum.EasingStyle.Linear)
-            task.wait(4)
-            Logo.Rotation = 0
-        end
-    end)
-    
-    -- Title with animated gradient
+    -- Title - clean, no animations
     local Title = Instance.new("TextLabel")
     Title.Name = "Title"
     Title.Size = UDim2.new(1, -150, 1, 0)
@@ -464,17 +429,11 @@ function InfernixLib:CreateWindow(config)
     Title.BackgroundTransparency = 1
     Title.Text = Window.Name
     Title.TextColor3 = Window.Theme.Text
-    Title.TextSize = 18
-    Title.Font = Enum.Font.GothamBold
+    Title.TextSize = 16
+    Title.Font = Enum.Font.GothamMedium
     Title.TextXAlignment = Enum.TextXAlignment.Left
     Title.ZIndex = 10
     Title.Parent = TopBar
-    
-    CreateAnimatedGradient(Title, {
-        {0, Window.Theme.AccentGradient[1]},
-        {0.5, Window.Theme.AccentGradient[2]},
-        {1, Window.Theme.AccentGradient[3]}
-    }, 6)
     
     -- Minimize Button (actually minimizes now)
     local MinimizeButton = Instance.new("TextButton")
@@ -565,15 +524,16 @@ function InfernixLib:CreateWindow(config)
     
     MakeDraggable(MainFrame, TopBar)
     
-    -- Tab Container with acrylic blur
+    -- Tab Container - clean, professional
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Name = "TabContainer"
     TabContainer.Size = UDim2.new(0, 180, 1, -68)
     TabContainer.Position = UDim2.new(0, 10, 0, 58)
     TabContainer.BackgroundColor3 = Window.Theme.SecondaryBackground
-    TabContainer.BackgroundTransparency = 0.4
+    TabContainer.BackgroundTransparency = 0.3
     TabContainer.BorderSizePixel = 0
-    TabContainer.ScrollBarThickness = 0
+    TabContainer.ScrollBarThickness = 4
+    TabContainer.ScrollBarImageColor3 = Window.Theme.Accent
     TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
     TabContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
     TabContainer.ScrollingDirection = Enum.ScrollingDirection.Y
@@ -581,15 +541,12 @@ function InfernixLib:CreateWindow(config)
     TabContainer.Parent = MainFrame
     
     local TabCorner = Instance.new("UICorner")
-    TabCorner.CornerRadius = UDim.new(0, 12)
+    TabCorner.CornerRadius = UDim.new(0, 10)
     TabCorner.Parent = TabContainer
     
-    -- Add acrylic blur to tab container
-    CreateAcrylicBlur(TabContainer)
-    
-    -- Add subtle border
+    -- Subtle border
     local TabBorder = Instance.new("UIStroke")
-    TabBorder.Color = Window.Theme.Accent
+    TabBorder.Color = Color3.fromRGB(80, 80, 80)
     TabBorder.Transparency = 0.7
     TabBorder.Thickness = 1
     TabBorder.Parent = TabContainer
