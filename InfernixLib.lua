@@ -351,24 +351,24 @@ function InfernixLib:CreateWindow(config)
     
     Window.ScreenGui = ScreenGui
     
-    -- Main Frame with transparency for acrylic effect
+    -- Main Frame with proper Fluent-style layout
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 850, 0, 480)
-    MainFrame.Position = UDim2.new(0.5, -425, 0.5, -240)
+    MainFrame.Size = UDim2.new(0, 580, 0, 460)
+    MainFrame.Position = UDim2.new(0.5, -290, 0.5, -230)
     MainFrame.BackgroundTransparency = 1
     MainFrame.BorderSizePixel = 0
     MainFrame.ClipsDescendants = false
     MainFrame.Visible = false
     MainFrame.Parent = ScreenGui
     
-    -- Clean background with blur (WindUI style)
+    -- Professional acrylic background (Fluent-style)
     local Background = Instance.new("Frame")
     Background.Name = "Background"
     Background.Size = UDim2.new(1, 0, 1, 0)
     Background.Position = UDim2.new(0, 0, 0, 0)
     Background.BackgroundColor3 = Window.Theme.Background
-    Background.BackgroundTransparency = 0.25
+    Background.BackgroundTransparency = 0.05
     Background.BorderSizePixel = 0
     Background.ZIndex = 0
     Background.Parent = MainFrame
@@ -377,40 +377,54 @@ function InfernixLib:CreateWindow(config)
     BackgroundCorner.CornerRadius = UDim.new(0, 12)
     BackgroundCorner.Parent = Background
     
-    -- Add blur effect
-    local BlurEffect = Instance.new("ImageLabel")
-    BlurEffect.Name = "BlurEffect"
-    BlurEffect.Size = UDim2.new(1, 0, 1, 0)
-    BlurEffect.BackgroundTransparency = 1
-    BlurEffect.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-    BlurEffect.ImageColor3 = Window.Theme.Background
-    BlurEffect.ImageTransparency = 0.3
-    BlurEffect.ScaleType = Enum.ScaleType.Tile
-    BlurEffect.TileSize = UDim2.new(0, 100, 0, 100)
-    BlurEffect.ZIndex = 1
-    BlurEffect.Parent = Background
+    -- Real acrylic blur with noise texture
+    local AcrylicBlur = Instance.new("Frame")
+    AcrylicBlur.Name = "AcrylicBlur"
+    AcrylicBlur.Size = UDim2.new(1, 0, 1, 0)
+    AcrylicBlur.BackgroundColor3 = Window.Theme.Background
+    AcrylicBlur.BackgroundTransparency = 0.4
+    AcrylicBlur.BorderSizePixel = 0
+    AcrylicBlur.ZIndex = 1
+    AcrylicBlur.Parent = Background
     
-    local BlurCorner = Instance.new("UICorner")
-    BlurCorner.CornerRadius = UDim.new(0, 12)
-    BlurCorner.Parent = BlurEffect
+    local AcrylicCorner = Instance.new("UICorner")
+    AcrylicCorner.CornerRadius = UDim.new(0, 12)
+    AcrylicCorner.Parent = AcrylicBlur
     
-    -- Subtle border
+    -- Noise texture for acrylic glass effect
+    local NoiseTexture = Instance.new("ImageLabel")
+    NoiseTexture.Name = "NoiseTexture"
+    NoiseTexture.Size = UDim2.new(1, 0, 1, 0)
+    NoiseTexture.BackgroundTransparency = 1
+    NoiseTexture.Image = "rbxassetid://8992230677"
+    NoiseTexture.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    NoiseTexture.ImageTransparency = 0.92
+    NoiseTexture.ScaleType = Enum.ScaleType.Tile
+    NoiseTexture.TileSize = UDim2.new(0, 80, 0, 80)
+    NoiseTexture.ZIndex = 2
+    NoiseTexture.Parent = AcrylicBlur
+    
+    local NoiseCorner = Instance.new("UICorner")
+    NoiseCorner.CornerRadius = UDim.new(0, 12)
+    NoiseCorner.Parent = NoiseTexture
+    
+    -- Premium border with subtle glow
     local BorderStroke = Instance.new("UIStroke")
-    BorderStroke.Color = Color3.fromRGB(80, 80, 80)
+    BorderStroke.Color = Window.Theme.Accent
     BorderStroke.Thickness = 1
-    BorderStroke.Transparency = 0.7
+    BorderStroke.Transparency = 0.85
     BorderStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     BorderStroke.Parent = Background
     
-    -- Shadow with blur
+    -- Professional shadow (Fluent-style)
     local Shadow = Instance.new("ImageLabel")
     Shadow.Name = "Shadow"
     Shadow.BackgroundTransparency = 1
-    Shadow.Position = UDim2.new(0, -25, 0, -25)
-    Shadow.Size = UDim2.new(1, 50, 1, 50)
+    Shadow.Position = UDim2.new(0, -20, 0, -20)
+    Shadow.Size = UDim2.new(1, 40, 1, 40)
     Shadow.Image = "rbxassetid://8992230677"
     Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    Shadow.ImageTransparency = 0.4
+    Shadow.ImageTransparency = 0.5
     Shadow.ScaleType = Enum.ScaleType.Slice
     Shadow.SliceCenter = Rect.new(100, 100, 100, 100)
     Shadow.ZIndex = -1
@@ -418,47 +432,59 @@ function InfernixLib:CreateWindow(config)
     
     Window.MainFrame = MainFrame
     
-    -- Top Bar
+    -- Top Bar (Fluent-style header)
     local TopBar = Instance.new("Frame")
     TopBar.Name = "TopBar"
-    TopBar.Size = UDim2.new(1, 0, 0, 56)
+    TopBar.Size = UDim2.new(1, 0, 0, 50)
     TopBar.BackgroundTransparency = 1
     TopBar.BorderSizePixel = 0
     TopBar.ZIndex = 10
     TopBar.Parent = MainFrame
     
-    -- Logo - no rotation animation
+    -- Separator line under TopBar
+    local TopBarSeparator = Instance.new("Frame")
+    TopBarSeparator.Name = "Separator"
+    TopBarSeparator.Size = UDim2.new(1, -24, 0, 1)
+    TopBarSeparator.Position = UDim2.new(0, 12, 1, 0)
+    TopBarSeparator.BackgroundColor3 = Window.Theme.ElementBorder
+    TopBarSeparator.BackgroundTransparency = 0.5
+    TopBarSeparator.BorderSizePixel = 0
+    TopBarSeparator.ZIndex = 10
+    TopBarSeparator.Parent = TopBar
+    
+    -- Logo (clean, professional)
     local Logo = Instance.new("ImageLabel")
     Logo.Name = "Logo"
-    Logo.Size = UDim2.new(0, 22, 0, 22)
-    Logo.Position = UDim2.new(0, 20, 0, 17)
+    Logo.Size = UDim2.new(0, 20, 0, 20)
+    Logo.Position = UDim2.new(0, 16, 0, 15)
     Logo.BackgroundTransparency = 1
     Logo.Image = Window.Icon or InfernixLib.Icons.Sparkles
     Logo.ImageColor3 = Window.Theme.Accent
     Logo.ZIndex = 10
     Logo.Parent = TopBar
     
-    -- Title - clean, no animations
+    -- Title (Fluent-style typography)
     local Title = Instance.new("TextLabel")
     Title.Name = "Title"
-    Title.Size = UDim2.new(1, -150, 1, 0)
-    Title.Position = UDim2.new(0, 56, 0, 0)
+    Title.Size = UDim2.new(1, -160, 0, 20)
+    Title.Position = UDim2.new(0, 44, 0, 15)
     Title.BackgroundTransparency = 1
     Title.Text = Window.Name
     Title.TextColor3 = Window.Theme.Text
-    Title.TextSize = 16
-    Title.Font = Enum.Font.GothamMedium
+    Title.TextSize = 14
+    Title.Font = Enum.Font.GothamSemibold
     Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.TextYAlignment = Enum.TextYAlignment.Center
     Title.ZIndex = 10
     Title.Parent = TopBar
     
-    -- Minimize Button (actually minimizes now)
+    -- Minimize Button (Fluent-style)
     local MinimizeButton = Instance.new("TextButton")
     MinimizeButton.Name = "MinimizeButton"
-    MinimizeButton.Size = UDim2.new(0, 38, 0, 38)
-    MinimizeButton.Position = UDim2.new(1, -88, 0, 9)
+    MinimizeButton.Size = UDim2.new(0, 32, 0, 32)
+    MinimizeButton.Position = UDim2.new(1, -76, 0, 9)
     MinimizeButton.BackgroundColor3 = Window.Theme.ElementBackground
-    MinimizeButton.BackgroundTransparency = 0.6
+    MinimizeButton.BackgroundTransparency = 1
     MinimizeButton.BorderSizePixel = 0
     MinimizeButton.Text = ""
     MinimizeButton.AutoButtonColor = false
@@ -466,42 +492,38 @@ function InfernixLib:CreateWindow(config)
     MinimizeButton.Parent = TopBar
     
     local MinimizeCorner = Instance.new("UICorner")
-    MinimizeCorner.CornerRadius = UDim.new(0, 10)
+    MinimizeCorner.CornerRadius = UDim.new(0, 6)
     MinimizeCorner.Parent = MinimizeButton
     
     local MinimizeIcon = Instance.new("TextLabel")
     MinimizeIcon.Size = UDim2.new(1, 0, 1, 0)
     MinimizeIcon.BackgroundTransparency = 1
-    MinimizeIcon.Text = "—"
+    MinimizeIcon.Text = "─"
     MinimizeIcon.TextColor3 = Window.Theme.SubText
-    MinimizeIcon.TextSize = 20
-    MinimizeIcon.Font = Enum.Font.GothamBold
+    MinimizeIcon.TextSize = 14
+    MinimizeIcon.Font = Enum.Font.GothamSemibold
     MinimizeIcon.ZIndex = 10
     MinimizeIcon.Parent = MinimizeButton
     
-    -- Minimize functionality (actually minimizes the window)
     MinimizeButton.MouseButton1Click:Connect(function()
         Window:Minimize()
     end)
     
     MinimizeButton.MouseEnter:Connect(function()
-        Tween(MinimizeButton, {BackgroundTransparency = 0.2})
-        Tween(MinimizeIcon, {TextColor3 = Window.Theme.Text})
-        CreateRipple(MinimizeButton, MinimizeButton.AbsoluteSize.X/2, MinimizeButton.AbsoluteSize.Y/2)
+        Tween(MinimizeButton, {BackgroundTransparency = 0.7})
     end)
     
     MinimizeButton.MouseLeave:Connect(function()
-        Tween(MinimizeButton, {BackgroundTransparency = 0.6})
-        Tween(MinimizeIcon, {TextColor3 = Window.Theme.SubText})
+        Tween(MinimizeButton, {BackgroundTransparency = 1})
     end)
     
-    -- Close Button
+    -- Close Button (Fluent-style with hover effect)
     local CloseButton = Instance.new("TextButton")
     CloseButton.Name = "CloseButton"
-    CloseButton.Size = UDim2.new(0, 38, 0, 38)
-    CloseButton.Position = UDim2.new(1, -44, 0, 9)
+    CloseButton.Size = UDim2.new(0, 32, 0, 32)
+    CloseButton.Position = UDim2.new(1, -38, 0, 9)
     CloseButton.BackgroundColor3 = Window.Theme.ElementBackground
-    CloseButton.BackgroundTransparency = 0.6
+    CloseButton.BackgroundTransparency = 1
     CloseButton.BorderSizePixel = 0
     CloseButton.Text = ""
     CloseButton.AutoButtonColor = false
@@ -509,84 +531,65 @@ function InfernixLib:CreateWindow(config)
     CloseButton.Parent = TopBar
     
     local CloseCorner = Instance.new("UICorner")
-    CloseCorner.CornerRadius = UDim.new(0, 10)
+    CloseCorner.CornerRadius = UDim.new(0, 6)
     CloseCorner.Parent = CloseButton
     
     local CloseIcon = Instance.new("TextLabel")
     CloseIcon.Size = UDim2.new(1, 0, 1, 0)
     CloseIcon.BackgroundTransparency = 1
-    CloseIcon.Text = "×"
+    CloseIcon.Text = "✕"
     CloseIcon.TextColor3 = Window.Theme.SubText
-    CloseIcon.TextSize = 26
-    CloseIcon.Font = Enum.Font.GothamBold
+    CloseIcon.TextSize = 14
+    CloseIcon.Font = Enum.Font.GothamSemibold
     CloseIcon.ZIndex = 10
     CloseIcon.Parent = CloseButton
     
     CloseButton.MouseButton1Click:Connect(function()
-        Tween(MainFrame, {Size = UDim2.new(0, 680, 0, 0)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
+        Tween(MainFrame, {Size = UDim2.new(0, 580, 0, 0)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
             ScreenGui:Destroy()
         end)
     end)
     
     CloseButton.MouseEnter:Connect(function()
-        Tween(CloseButton, {BackgroundColor3 = Window.Theme.Error, BackgroundTransparency = 0})
+        Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(196, 43, 28), BackgroundTransparency = 0})
         Tween(CloseIcon, {TextColor3 = Color3.fromRGB(255, 255, 255)})
-        CreateRipple(CloseButton, CloseButton.AbsoluteSize.X/2, CloseButton.AbsoluteSize.Y/2)
     end)
     
     CloseButton.MouseLeave:Connect(function()
-        Tween(CloseButton, {BackgroundColor3 = Window.Theme.ElementBackground, BackgroundTransparency = 0.6})
+        Tween(CloseButton, {BackgroundColor3 = Window.Theme.ElementBackground, BackgroundTransparency = 1})
         Tween(CloseIcon, {TextColor3 = Window.Theme.SubText})
     end)
     
     MakeDraggable(MainFrame, TopBar)
     
-    -- Tab Container - clean, professional
+    -- Horizontal Tab Container (Fluent-style)
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Name = "TabContainer"
-    TabContainer.Size = UDim2.new(0, 200, 1, -68)
-    TabContainer.Position = UDim2.new(0, 10, 0, 58)
-    TabContainer.BackgroundColor3 = Window.Theme.SecondaryBackground
-    TabContainer.BackgroundTransparency = 0.3
+    TabContainer.Size = UDim2.new(1, -24, 0, 42)
+    TabContainer.Position = UDim2.new(0, 12, 0, 58)
+    TabContainer.BackgroundTransparency = 1
     TabContainer.BorderSizePixel = 0
-    TabContainer.ScrollBarThickness = 4
-    TabContainer.ScrollBarImageColor3 = Window.Theme.Accent
-    TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
-    TabContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    TabContainer.ScrollingDirection = Enum.ScrollingDirection.Y
+    TabContainer.ScrollBarThickness = 0
+    TabContainer.CanvasSize = UDim2.new(0, 0, 0, 42)
+    TabContainer.AutomaticCanvasSize = Enum.AutomaticSize.X
+    TabContainer.ScrollingDirection = Enum.ScrollingDirection.X
     TabContainer.ZIndex = 5
     TabContainer.Parent = MainFrame
     
-    local TabCorner = Instance.new("UICorner")
-    TabCorner.CornerRadius = UDim.new(0, 10)
-    TabCorner.Parent = TabContainer
-    
-    -- Subtle border
-    local TabBorder = Instance.new("UIStroke")
-    TabBorder.Color = Color3.fromRGB(80, 80, 80)
-    TabBorder.Transparency = 0.7
-    TabBorder.Thickness = 1
-    TabBorder.Parent = TabContainer
-    
     local TabList = Instance.new("UIListLayout")
     TabList.Padding = UDim.new(0, 8)
+    TabList.FillDirection = Enum.FillDirection.Horizontal
     TabList.SortOrder = Enum.SortOrder.LayoutOrder
+    TabList.VerticalAlignment = Enum.VerticalAlignment.Center
     TabList.Parent = TabContainer
-    
-    local TabPadding = Instance.new("UIPadding")
-    TabPadding.PaddingTop = UDim.new(0, 8)
-    TabPadding.PaddingLeft = UDim.new(0, 12)
-    TabPadding.PaddingRight = UDim.new(0, 12)
-    TabPadding.PaddingBottom = UDim.new(0, 8)
-    TabPadding.Parent = TabContainer
     
     Window.TabContainer = TabContainer
     
-    -- Content Container
+    -- Content Container (below tabs)
     local ContentContainer = Instance.new("Frame")
     ContentContainer.Name = "ContentContainer"
-    ContentContainer.Size = UDim2.new(1, -228, 1, -68)
-    ContentContainer.Position = UDim2.new(0, 218, 0, 58)
+    ContentContainer.Size = UDim2.new(1, -24, 1, -112)
+    ContentContainer.Position = UDim2.new(0, 12, 0, 108)
     ContentContainer.BackgroundTransparency = 1
     ContentContainer.BorderSizePixel = 0
     ContentContainer.ClipsDescendants = true
@@ -595,36 +598,32 @@ function InfernixLib:CreateWindow(config)
     
     Window.ContentContainer = ContentContainer
     
-    -- Toggle UI with better animation
+    -- Toggle UI with smooth animation
     function Window:Toggle()
         self.Visible = not self.Visible
         if self.Visible then
             MainFrame.Visible = true
-            MainFrame.Size = UDim2.new(0, 850, 0, 0)
-            Tween(MainFrame, {Size = UDim2.new(0, 850, 0, 480)}, 0.4, Enum.EasingStyle.Quint)
+            MainFrame.Size = UDim2.new(0, 580, 0, 0)
+            Tween(MainFrame, {Size = UDim2.new(0, 580, 0, 460)}, 0.35, Enum.EasingStyle.Quint)
         else
-            Tween(MainFrame, {Size = UDim2.new(0, 850, 0, 0)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
+            Tween(MainFrame, {Size = UDim2.new(0, 580, 0, 0)}, 0.25, Enum.EasingStyle.Quint).Completed:Connect(function()
                 MainFrame.Visible = false
             end)
         end
     end
     
-    -- Minimize UI (collapse to titlebar only)
+    -- Minimize UI (collapse to titlebar)
     function Window:Minimize()
         self.Minimized = not self.Minimized
         if self.Minimized then
-            -- Hide content but keep titlebar visible
             TabContainer.Visible = false
             ContentContainer.Visible = false
-            Tween(MainFrame, {Size = UDim2.new(0, 850, 0, 56)}, 0.3, Enum.EasingStyle.Quint)
-            Tween(MinimizeIcon, {Rotation = 180})
+            Tween(MainFrame, {Size = UDim2.new(0, 580, 0, 50)}, 0.25, Enum.EasingStyle.Quint)
         else
-            -- Restore full window
-            Tween(MainFrame, {Size = UDim2.new(0, 850, 0, 480)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
+            Tween(MainFrame, {Size = UDim2.new(0, 580, 0, 460)}, 0.25, Enum.EasingStyle.Quint).Completed:Connect(function()
                 TabContainer.Visible = true
                 ContentContainer.Visible = true
             end)
-            Tween(MinimizeIcon, {Rotation = 0})
         end
     end
     
@@ -720,28 +719,70 @@ function InfernixLib:CreateWindow(config)
             Window = self
         }
         
-        -- Tab Button with modern design
+        -- Horizontal Tab Button (Fluent-style)
         local TabButton = Instance.new("TextButton")
         TabButton.Name = name
-        TabButton.Size = UDim2.new(1, 0, 0, 48)
+        TabButton.Size = UDim2.new(0, 0, 0, 36)
+        TabButton.AutomaticSize = Enum.AutomaticSize.X
         TabButton.BackgroundColor3 = Window.Theme.ElementBackground
         TabButton.BackgroundTransparency = 1
         TabButton.BorderSizePixel = 0
         TabButton.Text = ""
         TabButton.AutoButtonColor = false
-        TabButton.ClipsDescendants = false
         TabButton.ZIndex = 6
         TabButton.Parent = TabContainer
         
         local TabButtonCorner = Instance.new("UICorner")
-        TabButtonCorner.CornerRadius = UDim.new(0, 10)
+        TabButtonCorner.CornerRadius = UDim.new(0, 6)
         TabButtonCorner.Parent = TabButton
         
-        -- Active indicator (full background glow)
+        local TabButtonPadding = Instance.new("UIPadding")
+        TabButtonPadding.PaddingLeft = UDim.new(0, 12)
+        TabButtonPadding.PaddingRight = UDim.new(0, 12)
+        TabButtonPadding.Parent = TabButton
+        
+        -- Tab content container (horizontal layout with icon + text)
+        local TabButtonContent = Instance.new("Frame")
+        TabButtonContent.Name = "Content"
+        TabButtonContent.Size = UDim2.new(1, 0, 1, 0)
+        TabButtonContent.BackgroundTransparency = 1
+        TabButtonContent.Parent = TabButton
+        
+        local TabButtonLayout = Instance.new("UIListLayout")
+        TabButtonLayout.FillDirection = Enum.FillDirection.Horizontal
+        TabButtonLayout.Padding = UDim.new(0, 8)
+        TabButtonLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+        TabButtonLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+        TabButtonLayout.Parent = TabButtonContent
+        
+        -- Tab Icon (smaller, inline with text)
+        local TabIcon = Instance.new("ImageLabel")
+        TabIcon.Name = "Icon"
+        TabIcon.Size = UDim2.new(0, 16, 0, 16)
+        TabIcon.BackgroundTransparency = 1
+        TabIcon.Image = icon or InfernixLib.Icons.Home
+        TabIcon.ImageColor3 = Window.Theme.SubText
+        TabIcon.ZIndex = 8
+        TabIcon.Parent = TabButtonContent
+        
+        -- Tab Text (inline with icon)
+        local TabText = Instance.new("TextLabel")
+        TabText.Name = "Label"
+        TabText.Size = UDim2.new(0, 0, 1, 0)
+        TabText.AutomaticSize = Enum.AutomaticSize.X
+        TabText.BackgroundTransparency = 1
+        TabText.Text = name
+        TabText.TextColor3 = Window.Theme.SubText
+        TabText.TextSize = 13
+        TabText.Font = Enum.Font.GothamSemibold
+        TabText.ZIndex = 8
+        TabText.Parent = TabButtonContent
+        
+        -- Active indicator (bottom border - Fluent style)
         local ActiveBar = Instance.new("Frame")
         ActiveBar.Name = "ActiveBar"
-        ActiveBar.Size = UDim2.new(0, 4, 1, -8)
-        ActiveBar.Position = UDim2.new(0, 0, 0, 4)
+        ActiveBar.Size = UDim2.new(1, -16, 0, 2)
+        ActiveBar.Position = UDim2.new(0, 8, 1, -3)
         ActiveBar.BackgroundColor3 = Window.Theme.Accent
         ActiveBar.BackgroundTransparency = 1
         ActiveBar.BorderSizePixel = 0
@@ -751,34 +792,6 @@ function InfernixLib:CreateWindow(config)
         local BarCorner = Instance.new("UICorner")
         BarCorner.CornerRadius = UDim.new(1, 0)
         BarCorner.Parent = ActiveBar
-        
-        -- Add animated gradient to active bar
-        CreateAnimatedGradient(ActiveBar, Window.Theme.AccentGradient, 4)
-        
-        -- Tab Icon with glow effect
-        local TabIcon = Instance.new("ImageLabel")
-        TabIcon.Name = "Icon"
-        TabIcon.Size = UDim2.new(0, 22, 0, 22)
-        TabIcon.Position = UDim2.new(0, 14, 0.5, -11)
-        TabIcon.BackgroundTransparency = 1
-        TabIcon.Image = icon or InfernixLib.Icons.Home
-        TabIcon.ImageColor3 = Window.Theme.SubText
-        TabIcon.ZIndex = 8
-        TabIcon.Parent = TabButton
-        
-        -- Tab Text
-        local TabText = Instance.new("TextLabel")
-        TabText.Name = "Label"
-        TabText.Size = UDim2.new(1, -50, 1, 0)
-        TabText.Position = UDim2.new(0, 44, 0, 0)
-        TabText.BackgroundTransparency = 1
-        TabText.Text = name
-        TabText.TextColor3 = Window.Theme.SubText
-        TabText.TextSize = 14
-        TabText.Font = Enum.Font.GothamSemibold
-        TabText.TextXAlignment = Enum.TextXAlignment.Left
-        TabText.ZIndex = 8
-        TabText.Parent = TabButton
         
         Tab.Button = TabButton
         Tab.Icon = TabIcon
@@ -795,6 +808,7 @@ function InfernixLib:CreateWindow(config)
         TabContent.ScrollBarThickness = 4
         TabContent.ScrollBarImageColor3 = Window.Theme.Accent
         TabContent.CanvasSize = UDim2.new(0, 0, 0, 0)
+        TabContent.AutomaticCanvasSize = Enum.AutomaticSize.Y
         TabContent.Visible = false
         TabContent.Parent = ContentContainer
         
@@ -802,10 +816,6 @@ function InfernixLib:CreateWindow(config)
         ContentList.Padding = UDim.new(0, 10)
         ContentList.SortOrder = Enum.SortOrder.LayoutOrder
         ContentList.Parent = TabContent
-        
-        ContentList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            TabContent.CanvasSize = UDim2.new(0, 0, 0, ContentList.AbsoluteContentSize.Y + 15)
-        end)
         
         local ContentPadding = Instance.new("UIPadding")
         ContentPadding.PaddingTop = UDim.new(0, 8)
@@ -815,7 +825,7 @@ function InfernixLib:CreateWindow(config)
         
         Tab.Content = TabContent
         
-        -- Select tab with modern animations
+        -- Select tab with Fluent-style animations
         local function SelectTab()
             for _, tab in pairs(Window.Tabs) do
                 Tween(tab.Button, {BackgroundTransparency = 1})
@@ -825,22 +835,21 @@ function InfernixLib:CreateWindow(config)
                 tab.Content.Visible = false
             end
             
-            Tween(TabButton, {BackgroundTransparency = 0.5})
-            Tween(TabIcon, {ImageColor3 = Window.Theme.AccentGradient[1]})
-            Tween(TabText, {TextColor3 = Window.Theme.Text})
-            Tween(ActiveBar, {BackgroundTransparency = 0}, 0.3, Enum.EasingStyle.Back)
+            Tween(TabButton, {BackgroundTransparency = 0.9})
+            Tween(TabIcon, {ImageColor3 = Window.Theme.Accent})
+            Tween(TabText, {TextColor3 = Window.Theme.Accent})
+            Tween(ActiveBar, {BackgroundTransparency = 0}, 0.3, Enum.EasingStyle.Quint)
             TabContent.Visible = true
             Window.CurrentTab = Tab
         end
         
         TabButton.MouseButton1Click:Connect(function()
             SelectTab()
-            CreateRipple(TabButton, TabButton.AbsoluteSize.X/2, TabButton.AbsoluteSize.Y/2)
         end)
         
         TabButton.MouseEnter:Connect(function()
             if Window.CurrentTab ~= Tab then
-                Tween(TabButton, {BackgroundTransparency = 0.7})
+                Tween(TabButton, {BackgroundTransparency = 0.85})
                 Tween(TabIcon, {ImageColor3 = Window.Theme.Text})
                 Tween(TabText, {TextColor3 = Window.Theme.Text})
             end
