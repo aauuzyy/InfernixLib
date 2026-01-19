@@ -83,7 +83,7 @@ end
 local DepthOfField = Instance.new("DepthOfFieldEffect")
 DepthOfField.FarIntensity = 0
 DepthOfField.InFocusRadius = 0.1
-DepthOfField.NearIntensity = 1
+DepthOfField.NearIntensity = 1.5
 DepthOfField.Parent = game:GetService("Lighting")
 
 local BlurFolder = Instance.new("Folder")
@@ -231,7 +231,7 @@ function InfernixLib:CreateExecutor(config)
     Background.Name = "Background"
     Background.Size = UDim2.new(1, 0, 1, 0)
     Background.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
-    Background.BackgroundTransparency = 0.3
+    Background.BackgroundTransparency = 0.1
     Background.BorderSizePixel = 0
     Background.Parent = Window
     
@@ -420,6 +420,18 @@ function InfernixLib:CreateExecutor(config)
             task.spawn(func)
         else
             warn("Execution Error:", err)
+        end
+    end)
+    
+    -- Inject Button
+    createButton("Inject", function()
+        local code = CodeBox.Text
+        local func, err = loadstring(code)
+        if func then
+            task.spawn(func)
+            print("Script injected successfully")
+        else
+            warn("Injection Error:", err)
         end
     end)
     
