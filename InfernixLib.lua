@@ -506,7 +506,7 @@ function InfernixLib:CreateWindow(config)
     Background.Size = UDim2.new(1, 0, 1, 0)
     Background.Position = UDim2.new(0, 0, 0, 0)
     Background.BackgroundColor3 = Window.Theme.Background
-    Background.BackgroundTransparency = 0.15
+    Background.BackgroundTransparency = 1
     Background.BorderSizePixel = 0
     Background.ZIndex = 0
     Background.Parent = MainFrame
