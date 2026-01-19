@@ -106,14 +106,31 @@ local function CreateRipple(button, x, y)
     end)
 end
 
+-- Create static gradient (for compatibility)
+local function CreateGradient(parent, rotation, colorKeypoints)
+    local gradient = Instance.new("UIGradient")
+    gradient.Rotation = rotation or 0
+    
+    local colorSequence = {}
+    for _, keypoint in ipairs(colorKeypoints) do
+        table.insert(colorSequence, ColorSequenceKeypoint.new(keypoint[1], keypoint[2]))
+    end
+    gradient.Color = ColorSequence.new(colorSequence)
+    gradient.Parent = parent
+    
+    return gradient
+end
+
 -- Create animated gradient
 local function CreateAnimatedGradient(parent, colors, speed)
     local gradient = Instance.new("UIGradient")
     gradient.Rotation = 45
     
+    -- Convert colors array to color sequence keypoints
     local colorSequence = {}
-    for i, colorData in ipairs(colors) do
-        table.insert(colorSequence, ColorSequenceKeypoint.new(colorData[1], colorData[2]))
+    for i, color in ipairs(colors) do
+        local position = (i - 1) / (#colors - 1)
+        table.insert(colorSequence, ColorSequenceKeypoint.new(position, color))
     end
     gradient.Color = ColorSequence.new(colorSequence)
     gradient.Parent = parent
