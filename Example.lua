@@ -4,7 +4,7 @@
 ]]
 
 -- Load the library
-local InfernixLib = loadstring(game:HttpGet("YOUR_LOADSTRING_URL_HERE"))()
+local InfernixLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/aauuzyy/InfernixLib/main/InfernixLib.lua"))()
 
 -- Create a window
 local Window = InfernixLib:CreateWindow({

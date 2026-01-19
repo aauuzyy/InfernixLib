@@ -21,7 +21,7 @@ InfernixLib is a powerful and beautiful UI library designed for Roblox injectors
 ### Installation
 
 ```lua
-local InfernixLib = loadstring(game:HttpGet("YOUR_LOADSTRING_URL_HERE"))()
+local InfernixLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/aauuzyy/InfernixLib/main/InfernixLib.lua"))()
 ```
 
 ### Basic Usage
