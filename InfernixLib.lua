@@ -1746,8 +1746,11 @@ function InfernixLib:CreateWindow(config)
         return Tab
     end
     
-    -- Notification System
-    function InfernixLib:Notify(config)
+    return Window
+end
+
+-- Notification System
+function InfernixLib:Notify(config)
         config = config or {}
         local title = config.Title or "Notification"
         local content = config.Content or ""
@@ -1831,9 +1834,6 @@ function InfernixLib:CreateWindow(config)
                 NotificationGui:Destroy()
             end)
         end)
-    end
-    
-    return Window
 end
 
 return InfernixLib
