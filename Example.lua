@@ -5,7 +5,7 @@
 ]]
 
 -- Load the library
-local InfernixLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/aauuzyy/InfernixLib/main/InfernixLib.lua"))()
+local InfernixLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/aauuzyy/InfernixLib/main/InfernixLib.lua?v=" .. os.time()))()
 
 -- Services
 local Players = game:GetService("Players")
