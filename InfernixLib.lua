@@ -149,7 +149,7 @@ local function CreateAnimatedGradient(parent, colors, speed)
 end
 
 -- Load Acrylic system from separate modules
-local Acrylic = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_REPO/InfernixLib/main/Acrylic/init.lua"))()
+local Acrylic = loadstring(game:HttpGet("https://raw.githubusercontent.com/aauuzyy/InfernixLib/main/Acrylic/init.lua"))()
 -- For local testing: local Acrylic = require(script.Parent.Acrylic)
 
 -- Create animated particles
