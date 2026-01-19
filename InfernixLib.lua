@@ -384,10 +384,10 @@ InfernixLib.Themes = {
         TertiaryBackground = Color3.fromRGB(54, 54, 54),
         Text = Color3.fromRGB(255, 255, 255),
         SubText = Color3.fromRGB(200, 200, 200),
-        Accent = Color3.fromRGB(0, 120, 212), -- Windows 11 Blue
+        Accent = Color3.fromRGB(70, 70, 70), -- Dark Gray
         AccentGradient = {
-            Color3.fromRGB(0, 120, 212),
-            Color3.fromRGB(0, 103, 192),
+            Color3.fromRGB(70, 70, 70),
+            Color3.fromRGB(90, 90, 90),
             Color3.fromRGB(0, 90, 158)
         },
         ElementBackground = Color3.fromRGB(45, 45, 45),
@@ -523,9 +523,9 @@ function InfernixLib:CreateWindow(config)
     
     -- Premium border with subtle glow
     local BorderStroke = Instance.new("UIStroke")
-    BorderStroke.Color = Window.Theme.Accent
+    BorderStroke.Color = Color3.fromRGB(120, 120, 120)
     BorderStroke.Thickness = 1
-    BorderStroke.Transparency = 0.85
+    BorderStroke.Transparency = 0.6
     BorderStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     BorderStroke.Parent = Background
     
