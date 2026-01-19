@@ -241,20 +241,20 @@ InfernixLib.Icons = {
 -- Themes - Premium color schemes with gradients
 InfernixLib.Themes = {
     Dark = {
-        Background = Color3.fromRGB(10, 10, 15),
-        SecondaryBackground = Color3.fromRGB(15, 15, 22),
-        TertiaryBackground = Color3.fromRGB(20, 20, 28),
+        Background = Color3.fromRGB(32, 32, 32),
+        SecondaryBackground = Color3.fromRGB(43, 43, 43),
+        TertiaryBackground = Color3.fromRGB(54, 54, 54),
         Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(170, 170, 190),
-        Accent = Color3.fromRGB(147, 51, 234), -- Purple
+        SubText = Color3.fromRGB(200, 200, 200),
+        Accent = Color3.fromRGB(0, 120, 212), -- Windows 11 Blue
         AccentGradient = {
-            Color3.fromRGB(147, 51, 234),
-            Color3.fromRGB(219, 39, 119),
-            Color3.fromRGB(236, 72, 153)
+            Color3.fromRGB(0, 120, 212),
+            Color3.fromRGB(0, 103, 192),
+            Color3.fromRGB(0, 90, 158)
         },
-        ElementBackground = Color3.fromRGB(18, 18, 26),
-        ElementBorder = Color3.fromRGB(35, 35, 50),
-        ElementHover = Color3.fromRGB(25, 25, 35),
+        ElementBackground = Color3.fromRGB(45, 45, 45),
+        ElementBorder = Color3.fromRGB(60, 60, 60),
+        ElementHover = Color3.fromRGB(55, 55, 55),
         Success = Color3.fromRGB(16, 185, 129),
         Warning = Color3.fromRGB(245, 158, 11),
         Error = Color3.fromRGB(239, 68, 68)
@@ -362,63 +362,54 @@ function InfernixLib:CreateWindow(config)
     MainFrame.Visible = false
     MainFrame.Parent = ScreenGui
     
-    -- Animated gradient background
+    -- Frosted glass acrylic background (Windows 11 style)
     local GradientBG = Instance.new("Frame")
     GradientBG.Name = "GradientBG"
     GradientBG.Size = UDim2.new(1, 0, 1, 0)
     GradientBG.Position = UDim2.new(0, 0, 0, 0)
     GradientBG.BackgroundColor3 = Window.Theme.Background
+    GradientBG.BackgroundTransparency = 0.15
     GradientBG.BorderSizePixel = 0
     GradientBG.ZIndex = 0
     GradientBG.Parent = MainFrame
     
     local GradientCorner = Instance.new("UICorner")
-    GradientCorner.CornerRadius = UDim.new(0, 16)
+    GradientCorner.CornerRadius = UDim.new(0, 8)
     GradientCorner.Parent = GradientBG
     
-    -- Create animated gradient overlay
-    local GradientOverlay = Instance.new("Frame")
-    GradientOverlay.Name = "GradientOverlay"
-    GradientOverlay.Size = UDim2.new(1, 0, 1, 0)
-    GradientOverlay.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    GradientOverlay.BackgroundTransparency = 0.92
-    GradientOverlay.BorderSizePixel = 0
-    GradientOverlay.ZIndex = 1
-    GradientOverlay.Parent = GradientBG
+    -- Subtle border (Windows 11 style)
+    local BorderStroke = Instance.new("UIStroke")
+    BorderStroke.Color = Color3.fromRGB(255, 255, 255)
+    BorderStroke.Thickness = 1
+    BorderStroke.Transparency = 0.9
+    BorderStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    BorderStroke.Parent = GradientBG
     
-    local GradientOverlayCorner = Instance.new("UICorner")
-    GradientOverlayCorner.CornerRadius = UDim.new(0, 16)
-    GradientOverlayCorner.Parent = GradientOverlay
+    -- Enhanced acrylic blur effect
+    local AcrylicLayer = Instance.new("Frame")
+    AcrylicLayer.Name = "AcrylicLayer"
+    AcrylicLayer.Size = UDim2.new(1, 0, 1, 0)
+    AcrylicLayer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    AcrylicLayer.BackgroundTransparency = 0.95
+    AcrylicLayer.BorderSizePixel = 0
+    AcrylicLayer.ZIndex = 1
+    AcrylicLayer.Parent = GradientBG
     
-    -- Animated gradient
-    CreateAnimatedGradient(GradientOverlay, {
-        {0, Window.Theme.AccentGradient[1]},
-        {0.5, Window.Theme.AccentGradient[2]},
-        {1, Window.Theme.AccentGradient[3]}
-    }, 10)
+    local AcrylicCorner = Instance.new("UICorner")
+    AcrylicCorner.CornerRadius = UDim.new(0, 8)
+    AcrylicCorner.Parent = AcrylicLayer
     
-    -- Acrylic blur layer
-    CreateAcrylicBlur(GradientBG)
-    
-    -- Animated particles
-    CreateParticles(GradientBG, 15, Window.Theme.Accent)
-    
-    -- Border glow
-    local BorderGlow = Instance.new("UIStroke")
-    BorderGlow.Color = Window.Theme.Accent
-    BorderGlow.Thickness = 1
-    BorderGlow.Transparency = 0.7
-    BorderGlow.Parent = GradientBG
-    
-    -- Animate border glow
-    task.spawn(function()
-        while BorderGlow and BorderGlow.Parent do
-            Tween(BorderGlow, {Transparency = 0.3}, 2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-            task.wait(2)
-            Tween(BorderGlow, {Transparency = 0.8}, 2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-            task.wait(2)
-        end
-    end)
+    -- Noise texture for frosted glass effect
+    local NoiseTexture = Instance.new("ImageLabel")
+    NoiseTexture.Size = UDim2.new(1, 0, 1, 0)
+    NoiseTexture.BackgroundTransparency = 1
+    NoiseTexture.Image = "rbxassetid://4819794683"
+    NoiseTexture.ImageTransparency = 0.97
+    NoiseTexture.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    NoiseTexture.ScaleType = Enum.ScaleType.Tile
+    NoiseTexture.TileSize = UDim2.new(0, 128, 0, 128)
+    NoiseTexture.ZIndex = 2
+    NoiseTexture.Parent = GradientBG
     
     -- Shadow with blur
     local Shadow = Instance.new("ImageLabel")
