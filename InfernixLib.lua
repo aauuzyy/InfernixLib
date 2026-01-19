@@ -26,7 +26,14 @@ local Icons = {
     RestoreDown = "rbxassetid://9886659001",
     Minimize = "rbxassetid://9886659276",
     Icon = "rbxassetid://9886659555",
-    DropShadow = "rbxassetid://9886919127"
+    DropShadow = "rbxassetid://9886919127",
+    Copy = "rbxassetid://9886650687",
+    Paste = "rbxassetid://9886651142",
+    Cut = "rbxassetid://9886651257",
+    Delete = "rbxassetid://9886650877",
+    NewFile = "rbxassetid://9886650654",
+    Undo = "rbxassetid://9886651126",
+    Redo = "rbxassetid://9886651034"
 }
 
 -- Utility Functions
@@ -347,10 +354,113 @@ function InfernixLib:CreateExecutor(config)
     TabList.Padding = UDim.new(0, 4)
     TabList.Parent = TabContainer
     
+    -- Editor Toolbar (Copy, New File, Delete, Undo, Redo)
+    local Toolbar = Instance.new("Frame")
+    Toolbar.Size = UDim2.new(1, -24, 0, 32)
+    Toolbar.Position = UDim2.new(0, 12, 0, 132)
+    Toolbar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Toolbar.BorderSizePixel = 0
+    Toolbar.Parent = Window
+    
+    local ToolbarCorner = Instance.new("UICorner")
+    ToolbarCorner.CornerRadius = UDim.new(0, 4)
+    ToolbarCorner.Parent = Toolbar
+    
+    local ToolbarList = Instance.new("UIListLayout")
+    ToolbarList.FillDirection = Enum.FillDirection.Horizontal
+    ToolbarList.Padding = UDim.new(0, 4)
+    ToolbarList.Parent = Toolbar
+    
+    local function createToolbarButton(icon, tooltip, callback)
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.new(0, 32, 0, 32)
+        button.BackgroundTransparency = 1
+        button.Text = ""
+        button.Parent = Toolbar
+        
+        local iconLabel = Instance.new("ImageLabel")
+        iconLabel.Size = UDim2.new(0, 16, 0, 16)
+        iconLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+        iconLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+        iconLabel.Image = icon
+        iconLabel.BackgroundTransparency = 1
+        iconLabel.ImageColor3 = Color3.fromRGB(200, 200, 200)
+        iconLabel.Parent = button
+        
+        button.MouseEnter:Connect(function()
+            button.BackgroundTransparency = 0
+            button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+            iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
+        end)
+        
+        button.MouseLeave:Connect(function()
+            button.BackgroundTransparency = 1
+            iconLabel.ImageColor3 = Color3.fromRGB(200, 200, 200)
+        end)
+        
+        if callback then
+            button.MouseButton1Click:Connect(callback)
+        end
+        
+        return button
+    end
+    
+    local CodeBox -- Forward reference
+    
+    -- Toolbar buttons
+    createToolbarButton(Icons.NewFile, "New File", function()
+        if CodeBox then
+            CodeBox.Text = "-- New Script\n"
+        end
+    end)
+    
+    createToolbarButton(Icons.Copy, "Copy", function()
+        if CodeBox then
+            setclipboard(CodeBox.Text)
+        end
+    end)
+    
+    createToolbarButton(Icons.Paste, "Paste", function()
+        if CodeBox and getclipboard then
+            CodeBox.Text = getclipboard()
+        end
+    end)
+    
+    createToolbarButton(Icons.Cut, "Cut", function()
+        if CodeBox then
+            setclipboard(CodeBox.Text)
+            CodeBox.Text = ""
+        end
+    end)
+    
+    createToolbarButton(Icons.Delete, "Clear", function()
+        if CodeBox then
+            CodeBox.Text = ""
+        end
+    end)
+    
+    -- Separator
+    local Separator = Instance.new("Frame")
+    Separator.Size = UDim2.new(0, 1, 0, 24)
+    Separator.Position = UDim2.new(0, 0, 0, 4)
+    Separator.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    Separator.BorderSizePixel = 0
+    Separator.Parent = Toolbar
+    
+    createToolbarButton(Icons.Undo, "Undo", function()
+        -- Undo functionality would require history tracking
+        print("Undo not yet implemented")
+    end)
+    
+    createToolbarButton(Icons.Redo, "Redo", function()
+        -- Redo functionality would require history tracking
+        print("Redo not yet implemented")
+    end)
+    
     -- Code Editor/Console Area
     local EditorContainer = Instance.new("Frame")
-    EditorContainer.Size = UDim2.new(1, -24, 1, -180)
-    EditorContainer.Position = UDim2.new(0, 12, 0, 132)
+    EditorContainer.Size = UDim2.new(1, -24, 1, -220)
+    EditorContainer.Position = UDim2.new(0, 12, 0, 172)
     EditorContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     EditorContainer.BorderSizePixel = 0
     EditorContainer.Parent = Window
@@ -359,7 +469,7 @@ function InfernixLib:CreateExecutor(config)
     EditorCorner.CornerRadius = UDim.new(0, 4)
     EditorCorner.Parent = EditorContainer
     
-    local CodeBox = Instance.new("TextBox")
+    CodeBox = Instance.new("TextBox")
     CodeBox.Size = UDim2.new(1, -20, 1, -20)
     CodeBox.Position = UDim2.new(0, 10, 0, 10)
     CodeBox.BackgroundTransparency = 1
