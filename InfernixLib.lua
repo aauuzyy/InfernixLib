@@ -106,126 +106,197 @@ local function CreateRipple(button, x, y)
     end)
 end
 
--- Create gradient
-local function CreateGradient(parent, rotation, colors)
+-- Create animated gradient
+local function CreateAnimatedGradient(parent, colors, speed)
     local gradient = Instance.new("UIGradient")
-    gradient.Rotation = rotation or 0
-    if colors then
-        local colorSequence = {}
-        for i, colorData in ipairs(colors) do
-            table.insert(colorSequence, ColorSequenceKeypoint.new(colorData[1], colorData[2]))
-        end
-        gradient.Color = ColorSequence.new(colorSequence)
+    gradient.Rotation = 45
+    
+    local colorSequence = {}
+    for i, colorData in ipairs(colors) do
+        table.insert(colorSequence, ColorSequenceKeypoint.new(colorData[1], colorData[2]))
     end
+    gradient.Color = ColorSequence.new(colorSequence)
     gradient.Parent = parent
+    
+    -- Animate rotation
+    task.spawn(function()
+        while gradient and gradient.Parent do
+            local startRotation = gradient.Rotation
+            Tween(gradient, {Rotation = startRotation + 360}, speed or 8, Enum.EasingStyle.Linear)
+            task.wait(speed or 8)
+        end
+    end)
+    
     return gradient
 end
 
--- Create blur effect
-local function CreateBlur(parent, size)
-    local blur = Instance.new("ImageLabel")
-    blur.Name = "Blur"
-    blur.BackgroundTransparency = 1
-    blur.Image = "rbxassetid://8992230677" -- Modern blur texture
-    blur.ImageColor3 = Color3.fromRGB(10, 10, 15)
-    blur.ImageTransparency = 0.3
-    blur.ScaleType = Enum.ScaleType.Slice
-    blur.SliceCenter = Rect.new(100, 100, 100, 100)
-    blur.Size = UDim2.new(1, size or 0, 1, size or 0)
-    blur.Position = UDim2.new(0, -(size or 0)/2, 0, -(size or 0)/2)
-    blur.ZIndex = parent.ZIndex - 1
-    blur.Parent = parent
-    return blur
+-- Create acrylic blur effect
+local function CreateAcrylicBlur(parent)
+    local blurFrame = Instance.new("Frame")
+    blurFrame.Name = "AcrylicBlur"
+    blurFrame.Size = UDim2.new(1, 0, 1, 0)
+    blurFrame.Position = UDim2.new(0, 0, 0, 0)
+    blurFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+    blurFrame.BackgroundTransparency = 0.3
+    blurFrame.BorderSizePixel = 0
+    blurFrame.ZIndex = 1
+    blurFrame.Parent = parent
+    
+    -- Noise texture for acrylic effect
+    local noise = Instance.new("ImageLabel")
+    noise.Size = UDim2.new(1, 0, 1, 0)
+    noise.BackgroundTransparency = 1
+    noise.Image = "rbxassetid://4819794683" -- Subtle noise texture
+    noise.ImageTransparency = 0.95
+    noise.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    noise.ScaleType = Enum.ScaleType.Tile
+    noise.TileSize = UDim2.new(0, 100, 0, 100)
+    noise.ZIndex = 1
+    noise.Parent = blurFrame
+    
+    return blurFrame
 end
 
--- Icon library
+-- Create animated particles
+local function CreateParticles(parent, count, color)
+    local particles = {}
+    
+    for i = 1, count do
+        local particle = Instance.new("Frame")
+        particle.Name = "Particle"
+        particle.Size = UDim2.new(0, math.random(2, 4), 0, math.random(2, 4))
+        particle.Position = UDim2.new(math.random(), 0, math.random(), 0)
+        particle.BackgroundColor3 = color or Color3.fromRGB(138, 80, 255)
+        particle.BackgroundTransparency = math.random(30, 70) / 100
+        particle.BorderSizePixel = 0
+        particle.ZIndex = 2
+        particle.Parent = parent
+        
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(1, 0)
+        corner.Parent = particle
+        
+        table.insert(particles, particle)
+        
+        -- Animate particle
+        task.spawn(function()
+            while particle and particle.Parent do
+                local randomX = math.random(-50, 50) / 100
+                local randomY = math.random(-50, 50) / 100
+                local duration = math.random(3, 6)
+                
+                Tween(particle, {
+                    Position = UDim2.new(
+                        math.clamp(particle.Position.X.Scale + randomX, 0, 1),
+                        0,
+                        math.clamp(particle.Position.Y.Scale + randomY, 0, 1),
+                        0
+                    ),
+                    BackgroundTransparency = math.random(30, 80) / 100
+                }, duration, Enum.EasingStyle.Sine)
+                
+                task.wait(duration)
+            end
+        end)
+    end
+    
+    return particles
+end
+
+-- Icon library with actual Roblox asset IDs
 InfernixLib.Icons = {
-    Home = "rbxassetid://10734896206",
+    Home = "rbxassetid://10723434711",
     Settings = "rbxassetid://10734950309",
     User = "rbxassetid://10747374131",
-    Shield = "rbxassetid://10723434711",
+    Shield = "rbxassetid://10723407389",
     Eye = "rbxassetid://10747318871",
     Gamepad = "rbxassetid://10709790537",
     Sparkles = "rbxassetid://10709791437",
     Code = "rbxassetid://10709769841",
     Info = "rbxassetid://10723434711",
     Check = "rbxassetid://10709818534",
-    X = "rbxassetid://10747384394"
+    X = "rbxassetid://10747384394",
+    Search = "rbxassetid://10734898355",
+    Zap = "rbxassetid://10747372992"
 }
 
--- Themes - REDESIGNED with professional colors
+-- Themes - Premium color schemes with gradients
 InfernixLib.Themes = {
     Dark = {
-        Background = Color3.fromRGB(12, 12, 16),
-        SecondaryBackground = Color3.fromRGB(18, 18, 24),
-        TertiaryBackground = Color3.fromRGB(24, 24, 32),
+        Background = Color3.fromRGB(10, 10, 15),
+        SecondaryBackground = Color3.fromRGB(15, 15, 22),
+        TertiaryBackground = Color3.fromRGB(20, 20, 28),
         Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(160, 160, 180),
-        Accent = Color3.fromRGB(138, 80, 255), -- Purple accent
+        SubText = Color3.fromRGB(170, 170, 190),
+        Accent = Color3.fromRGB(147, 51, 234), -- Purple
         AccentGradient = {
-            Color3.fromRGB(138, 80, 255),
-            Color3.fromRGB(198, 120, 255)
+            Color3.fromRGB(147, 51, 234),
+            Color3.fromRGB(219, 39, 119),
+            Color3.fromRGB(236, 72, 153)
         },
-        ElementBackground = Color3.fromRGB(20, 20, 28),
-        ElementBorder = Color3.fromRGB(40, 40, 52),
-        ElementHover = Color3.fromRGB(28, 28, 38),
-        Success = Color3.fromRGB(46, 213, 115),
-        Warning = Color3.fromRGB(255, 168, 1),
-        Error = Color3.fromRGB(255, 71, 87)
+        ElementBackground = Color3.fromRGB(18, 18, 26),
+        ElementBorder = Color3.fromRGB(35, 35, 50),
+        ElementHover = Color3.fromRGB(25, 25, 35),
+        Success = Color3.fromRGB(16, 185, 129),
+        Warning = Color3.fromRGB(245, 158, 11),
+        Error = Color3.fromRGB(239, 68, 68)
     },
     Light = {
-        Background = Color3.fromRGB(250, 250, 255),
-        SecondaryBackground = Color3.fromRGB(242, 242, 250),
-        TertiaryBackground = Color3.fromRGB(235, 235, 245),
-        Text = Color3.fromRGB(20, 20, 30),
-        SubText = Color3.fromRGB(110, 110, 130),
-        Accent = Color3.fromRGB(138, 80, 255),
+        Background = Color3.fromRGB(255, 255, 255),
+        SecondaryBackground = Color3.fromRGB(249, 250, 251),
+        TertiaryBackground = Color3.fromRGB(243, 244, 246),
+        Text = Color3.fromRGB(17, 24, 39),
+        SubText = Color3.fromRGB(107, 114, 128),
+        Accent = Color3.fromRGB(147, 51, 234),
         AccentGradient = {
-            Color3.fromRGB(138, 80, 255),
-            Color3.fromRGB(198, 120, 255)
+            Color3.fromRGB(147, 51, 234),
+            Color3.fromRGB(219, 39, 119),
+            Color3.fromRGB(236, 72, 153)
         },
         ElementBackground = Color3.fromRGB(255, 255, 255),
-        ElementBorder = Color3.fromRGB(225, 225, 235),
-        ElementHover = Color3.fromRGB(245, 245, 252),
-        Success = Color3.fromRGB(46, 213, 115),
-        Warning = Color3.fromRGB(255, 168, 1),
-        Error = Color3.fromRGB(255, 71, 87)
+        ElementBorder = Color3.fromRGB(229, 231, 235),
+        ElementHover = Color3.fromRGB(243, 244, 246),
+        Success = Color3.fromRGB(16, 185, 129),
+        Warning = Color3.fromRGB(245, 158, 11),
+        Error = Color3.fromRGB(239, 68, 68)
     },
     Midnight = {
-        Background = Color3.fromRGB(8, 12, 20),
-        SecondaryBackground = Color3.fromRGB(12, 18, 28),
-        TertiaryBackground = Color3.fromRGB(16, 24, 36),
-        Text = Color3.fromRGB(220, 230, 255),
-        SubText = Color3.fromRGB(140, 160, 200),
-        Accent = Color3.fromRGB(99, 179, 255), -- Cyan accent
+        Background = Color3.fromRGB(5, 10, 20),
+        SecondaryBackground = Color3.fromRGB(10, 15, 28),
+        TertiaryBackground = Color3.fromRGB(15, 22, 36),
+        Text = Color3.fromRGB(220, 235, 255),
+        SubText = Color3.fromRGB(140, 170, 210),
+        Accent = Color3.fromRGB(59, 130, 246), // Blue
         AccentGradient = {
-            Color3.fromRGB(99, 179, 255),
-            Color3.fromRGB(139, 199, 255)
+            Color3.fromRGB(59, 130, 246),
+            Color3.fromRGB(99, 102, 241),
+            Color3.fromRGB(139, 92, 246)
         },
-        ElementBackground = Color3.fromRGB(14, 20, 32),
-        ElementBorder = Color3.fromRGB(28, 40, 60),
-        ElementHover = Color3.fromRGB(20, 28, 44),
-        Success = Color3.fromRGB(82, 196, 26),
-        Warning = Color3.fromRGB(250, 173, 20),
-        Error = Color3.fromRGB(255, 77, 79)
+        ElementBackground = Color3.fromRGB(12, 18, 32),
+        ElementBorder = Color3.fromRGB(30, 40, 62),
+        ElementHover = Color3.fromRGB(18, 25, 42),
+        Success = Color3.fromRGB(52, 211, 153),
+        Warning = Color3.fromRGB(251, 191, 36),
+        Error = Color3.fromRGB(248, 113, 113)
     },
     Sunset = {
-        Background = Color3.fromRGB(20, 10, 15),
-        SecondaryBackground = Color3.fromRGB(28, 14, 20),
-        TertiaryBackground = Color3.fromRGB(36, 18, 26),
-        Text = Color3.fromRGB(255, 240, 245),
-        SubText = Color3.fromRGB(200, 160, 180),
-        Accent = Color3.fromRGB(255, 107, 129), -- Pink/Red accent
+        Background = Color3.fromRGB(18, 8, 15),
+        SecondaryBackground = Color3.fromRGB(25, 12, 20),
+        TertiaryBackground = Color3.fromRGB(32, 16, 26),
+        Text = Color3.fromRGB(255, 240, 250),
+        SubText = Color3.fromRGB(210, 170, 195),
+        Accent = Color3.fromRGB(244, 63, 94), // Pink/Red
         AccentGradient = {
-            Color3.fromRGB(255, 107, 129),
-            Color3.fromRGB(255, 142, 161)
+            Color3.fromRGB(244, 63, 94),
+            Color3.fromRGB(251, 113, 133),
+            Color3.fromRGB(253, 164, 175)
         },
-        ElementBackground = Color3.fromRGB(24, 12, 18),
-        ElementBorder = Color3.fromRGB(48, 24, 36),
-        ElementHover = Color3.fromRGB(34, 16, 25),
-        Success = Color3.fromRGB(46, 213, 115),
-        Warning = Color3.fromRGB(255, 193, 7),
-        Error = Color3.fromRGB(255, 71, 87)
+        ElementBackground = Color3.fromRGB(22, 10, 18),
+        ElementBorder = Color3.fromRGB(48, 22, 38),
+        ElementHover = Color3.fromRGB(32, 14, 26),
+        Success = Color3.fromRGB(52, 211, 153),
+        Warning = Color3.fromRGB(251, 191, 36),
+        Error = Color3.fromRGB(248, 113, 113)
     }
 }
 
@@ -262,105 +333,154 @@ function InfernixLib:CreateWindow(config)
     
     Window.ScreenGui = ScreenGui
     
-    -- Main Frame
+    -- Main Frame with transparency for acrylic effect
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 650, 0, 480)
-    MainFrame.Position = UDim2.new(0.5, -325, 0.5, -240)
-    MainFrame.BackgroundColor3 = Window.Theme.Background
+    MainFrame.Size = UDim2.new(0, 680, 0, 500)
+    MainFrame.Position = UDim2.new(0.5, -340, 0.5, -250)
+    MainFrame.BackgroundTransparency = 1
     MainFrame.BorderSizePixel = 0
     MainFrame.ClipsDescendants = false
     MainFrame.Parent = ScreenGui
     
-    local MainCorner = Instance.new("UICorner")
-    MainCorner.CornerRadius = UDim.new(0, 12)
-    MainCorner.Parent = MainFrame
+    -- Animated gradient background
+    local GradientBG = Instance.new("Frame")
+    GradientBG.Name = "GradientBG"
+    GradientBG.Size = UDim2.new(1, 0, 1, 0)
+    GradientBG.Position = UDim2.new(0, 0, 0, 0)
+    GradientBG.BackgroundColor3 = Window.Theme.Background
+    GradientBG.BorderSizePixel = 0
+    GradientBG.ZIndex = 0
+    GradientBG.Parent = MainFrame
     
-    -- Modern shadow with blur
+    local GradientCorner = Instance.new("UICorner")
+    GradientCorner.CornerRadius = UDim.new(0, 16)
+    GradientCorner.Parent = GradientBG
+    
+    -- Create animated gradient overlay
+    local GradientOverlay = Instance.new("Frame")
+    GradientOverlay.Name = "GradientOverlay"
+    GradientOverlay.Size = UDim2.new(1, 0, 1, 0)
+    GradientOverlay.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    GradientOverlay.BackgroundTransparency = 0.92
+    GradientOverlay.BorderSizePixel = 0
+    GradientOverlay.ZIndex = 1
+    GradientOverlay.Parent = GradientBG
+    
+    local GradientOverlayCorner = Instance.new("UICorner")
+    GradientOverlayCorner.CornerRadius = UDim.new(0, 16)
+    GradientOverlayCorner.Parent = GradientOverlay
+    
+    -- Animated gradient
+    CreateAnimatedGradient(GradientOverlay, {
+        {0, Window.Theme.AccentGradient[1]},
+        {0.5, Window.Theme.AccentGradient[2]},
+        {1, Window.Theme.AccentGradient[3]}
+    }, 10)
+    
+    -- Acrylic blur layer
+    CreateAcrylicBlur(GradientBG)
+    
+    -- Animated particles
+    CreateParticles(GradientBG, 15, Window.Theme.Accent)
+    
+    -- Border glow
+    local BorderGlow = Instance.new("UIStroke")
+    BorderGlow.Color = Window.Theme.Accent
+    BorderGlow.Thickness = 1
+    BorderGlow.Transparency = 0.7
+    BorderGlow.Parent = GradientBG
+    
+    -- Animate border glow
+    task.spawn(function()
+        while BorderGlow and BorderGlow.Parent do
+            Tween(BorderGlow, {Transparency = 0.3}, 2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+            task.wait(2)
+            Tween(BorderGlow, {Transparency = 0.8}, 2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+            task.wait(2)
+        end
+    end)
+    
+    -- Shadow with blur
     local Shadow = Instance.new("ImageLabel")
     Shadow.Name = "Shadow"
     Shadow.BackgroundTransparency = 1
-    Shadow.Position = UDim2.new(0, -20, 0, -20)
-    Shadow.Size = UDim2.new(1, 40, 1, 40)
+    Shadow.Position = UDim2.new(0, -25, 0, -25)
+    Shadow.Size = UDim2.new(1, 50, 1, 50)
     Shadow.Image = "rbxassetid://8992230677"
     Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    Shadow.ImageTransparency = 0.5
+    Shadow.ImageTransparency = 0.4
     Shadow.ScaleType = Enum.ScaleType.Slice
     Shadow.SliceCenter = Rect.new(100, 100, 100, 100)
-    Shadow.ZIndex = 0
+    Shadow.ZIndex = -1
     Shadow.Parent = MainFrame
-    
-    -- Accent glow on top
-    local AccentGlow = Instance.new("Frame")
-    AccentGlow.Name = "AccentGlow"
-    AccentGlow.Size = UDim2.new(1, 0, 0, 2)
-    AccentGlow.Position = UDim2.new(0, 0, 0, 0)
-    AccentGlow.BackgroundColor3 = Window.Theme.Accent
-    AccentGlow.BorderSizePixel = 0
-    AccentGlow.ZIndex = 10
-    AccentGlow.Parent = MainFrame
-    
-    CreateGradient(AccentGlow, 90, {
-        {0, Window.Theme.AccentGradient[1]},
-        {1, Window.Theme.AccentGradient[2]}
-    })
-    
-    local GlowCorner = Instance.new("UICorner")
-    GlowCorner.CornerRadius = UDim.new(0, 12)
-    GlowCorner.Parent = AccentGlow
     
     Window.MainFrame = MainFrame
     
     -- Top Bar
     local TopBar = Instance.new("Frame")
     TopBar.Name = "TopBar"
-    TopBar.Size = UDim2.new(1, 0, 0, 52)
+    TopBar.Size = UDim2.new(1, 0, 0, 56)
     TopBar.BackgroundTransparency = 1
     TopBar.BorderSizePixel = 0
+    TopBar.ZIndex = 10
     TopBar.Parent = MainFrame
     
-    -- Logo/Icon
+    -- Logo/Icon with animation
     local Logo = Instance.new("ImageLabel")
     Logo.Name = "Logo"
-    Logo.Size = UDim2.new(0, 24, 0, 24)
-    Logo.Position = UDim2.new(0, 18, 0, 14)
+    Logo.Size = UDim2.new(0, 28, 0, 28)
+    Logo.Position = UDim2.new(0, 20, 0, 14)
     Logo.BackgroundTransparency = 1
     Logo.Image = Window.Icon or InfernixLib.Icons.Sparkles
     Logo.ImageColor3 = Window.Theme.Accent
+    Logo.ZIndex = 10
     Logo.Parent = TopBar
     
-    -- Title with gradient
+    -- Animate logo
+    task.spawn(function()
+        while Logo and Logo.Parent do
+            Tween(Logo, {Rotation = 360}, 4, Enum.EasingStyle.Linear)
+            task.wait(4)
+            Logo.Rotation = 0
+        end
+    end)
+    
+    -- Title with animated gradient
     local Title = Instance.new("TextLabel")
     Title.Name = "Title"
-    Title.Size = UDim2.new(1, -140, 1, 0)
-    Title.Position = UDim2.new(0, 50, 0, 0)
+    Title.Size = UDim2.new(1, -150, 1, 0)
+    Title.Position = UDim2.new(0, 56, 0, 0)
     Title.BackgroundTransparency = 1
     Title.Text = Window.Name
     Title.TextColor3 = Window.Theme.Text
-    Title.TextSize = 17
+    Title.TextSize = 18
     Title.Font = Enum.Font.GothamBold
     Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.ZIndex = 10
     Title.Parent = TopBar
     
-    CreateGradient(Title, 0, {
+    CreateAnimatedGradient(Title, {
         {0, Window.Theme.AccentGradient[1]},
-        {1, Window.Theme.AccentGradient[2]}
-    })
+        {0.5, Window.Theme.AccentGradient[2]},
+        {1, Window.Theme.AccentGradient[3]}
+    }, 6)
     
-    -- Minimize Button
+    -- Minimize Button (actually minimizes now)
     local MinimizeButton = Instance.new("TextButton")
     MinimizeButton.Name = "MinimizeButton"
-    MinimizeButton.Size = UDim2.new(0, 36, 0, 36)
-    MinimizeButton.Position = UDim2.new(1, -84, 0, 8)
+    MinimizeButton.Size = UDim2.new(0, 38, 0, 38)
+    MinimizeButton.Position = UDim2.new(1, -88, 0, 9)
     MinimizeButton.BackgroundColor3 = Window.Theme.ElementBackground
-    MinimizeButton.BackgroundTransparency = 0.4
+    MinimizeButton.BackgroundTransparency = 0.6
     MinimizeButton.BorderSizePixel = 0
     MinimizeButton.Text = ""
     MinimizeButton.AutoButtonColor = false
+    MinimizeButton.ZIndex = 10
     MinimizeButton.Parent = TopBar
     
     local MinimizeCorner = Instance.new("UICorner")
-    MinimizeCorner.CornerRadius = UDim.new(0, 8)
+    MinimizeCorner.CornerRadius = UDim.new(0, 10)
     MinimizeCorner.Parent = MinimizeButton
     
     local MinimizeIcon = Instance.new("TextLabel")
@@ -368,38 +488,42 @@ function InfernixLib:CreateWindow(config)
     MinimizeIcon.BackgroundTransparency = 1
     MinimizeIcon.Text = "—"
     MinimizeIcon.TextColor3 = Window.Theme.SubText
-    MinimizeIcon.TextSize = 18
+    MinimizeIcon.TextSize = 20
     MinimizeIcon.Font = Enum.Font.GothamBold
+    MinimizeIcon.ZIndex = 10
     MinimizeIcon.Parent = MinimizeButton
     
+    -- Minimize functionality (actually minimizes the window)
     MinimizeButton.MouseButton1Click:Connect(function()
-        Window:Toggle()
+        Window:Minimize()
     end)
     
     MinimizeButton.MouseEnter:Connect(function()
-        Tween(MinimizeButton, {BackgroundTransparency = 0})
+        Tween(MinimizeButton, {BackgroundTransparency = 0.2})
         Tween(MinimizeIcon, {TextColor3 = Window.Theme.Text})
+        CreateRipple(MinimizeButton, MinimizeButton.AbsoluteSize.X/2, MinimizeButton.AbsoluteSize.Y/2)
     end)
     
     MinimizeButton.MouseLeave:Connect(function()
-        Tween(MinimizeButton, {BackgroundTransparency = 0.4})
+        Tween(MinimizeButton, {BackgroundTransparency = 0.6})
         Tween(MinimizeIcon, {TextColor3 = Window.Theme.SubText})
     end)
     
     -- Close Button
     local CloseButton = Instance.new("TextButton")
     CloseButton.Name = "CloseButton"
-    CloseButton.Size = UDim2.new(0, 36, 0, 36)
-    CloseButton.Position = UDim2.new(1, -42, 0, 8)
+    CloseButton.Size = UDim2.new(0, 38, 0, 38)
+    CloseButton.Position = UDim2.new(1, -44, 0, 9)
     CloseButton.BackgroundColor3 = Window.Theme.ElementBackground
-    CloseButton.BackgroundTransparency = 0.4
+    CloseButton.BackgroundTransparency = 0.6
     CloseButton.BorderSizePixel = 0
     CloseButton.Text = ""
     CloseButton.AutoButtonColor = false
+    CloseButton.ZIndex = 10
     CloseButton.Parent = TopBar
     
     local CloseCorner = Instance.new("UICorner")
-    CloseCorner.CornerRadius = UDim.new(0, 8)
+    CloseCorner.CornerRadius = UDim.new(0, 10)
     CloseCorner.Parent = CloseButton
     
     local CloseIcon = Instance.new("TextLabel")
@@ -407,51 +531,69 @@ function InfernixLib:CreateWindow(config)
     CloseIcon.BackgroundTransparency = 1
     CloseIcon.Text = "×"
     CloseIcon.TextColor3 = Window.Theme.SubText
-    CloseIcon.TextSize = 22
+    CloseIcon.TextSize = 26
     CloseIcon.Font = Enum.Font.GothamBold
+    CloseIcon.ZIndex = 10
     CloseIcon.Parent = CloseButton
     
     CloseButton.MouseButton1Click:Connect(function()
-        Window:Toggle()
+        Tween(MainFrame, {Size = UDim2.new(0, 680, 0, 0)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
+            ScreenGui:Destroy()
+        end)
     end)
     
     CloseButton.MouseEnter:Connect(function()
         Tween(CloseButton, {BackgroundColor3 = Window.Theme.Error, BackgroundTransparency = 0})
-        Tween(CloseIcon, {TextColor3 = Window.Theme.Text})
+        Tween(CloseIcon, {TextColor3 = Color3.fromRGB(255, 255, 255)})
+        CreateRipple(CloseButton, CloseButton.AbsoluteSize.X/2, CloseButton.AbsoluteSize.Y/2)
     end)
     
     CloseButton.MouseLeave:Connect(function()
-        Tween(CloseButton, {BackgroundColor3 = Window.Theme.ElementBackground, BackgroundTransparency = 0.4})
+        Tween(CloseButton, {BackgroundColor3 = Window.Theme.ElementBackground, BackgroundTransparency = 0.6})
         Tween(CloseIcon, {TextColor3 = Window.Theme.SubText})
     end)
     
     MakeDraggable(MainFrame, TopBar)
     
-    -- Tab Container
+    -- Tab Container with acrylic blur
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Name = "TabContainer"
-    TabContainer.Size = UDim2.new(0, 170, 1, -68)
-    TabContainer.Position = UDim2.new(0, 12, 0, 58)
+    TabContainer.Size = UDim2.new(0, 180, 1, -68)
+    TabContainer.Position = UDim2.new(0, 10, 0, 58)
     TabContainer.BackgroundColor3 = Window.Theme.SecondaryBackground
+    TabContainer.BackgroundTransparency = 0.4
     TabContainer.BorderSizePixel = 0
     TabContainer.ScrollBarThickness = 0
     TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
     TabContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
     TabContainer.ScrollingDirection = Enum.ScrollingDirection.Y
+    TabContainer.ZIndex = 5
     TabContainer.Parent = MainFrame
     
     local TabCorner = Instance.new("UICorner")
-    TabCorner.CornerRadius = UDim.new(0, 10)
+    TabCorner.CornerRadius = UDim.new(0, 12)
     TabCorner.Parent = TabContainer
     
+    -- Add acrylic blur to tab container
+    CreateAcrylicBlur(TabContainer)
+    
+    -- Add subtle border
+    local TabBorder = Instance.new("UIStroke")
+    TabBorder.Color = Window.Theme.Accent
+    TabBorder.Transparency = 0.7
+    TabBorder.Thickness = 1
+    TabBorder.Parent = TabContainer
+    
     local TabList = Instance.new("UIListLayout")
-    TabList.Padding = UDim.new(0, 6)
+    TabList.Padding = UDim.new(0, 8)
     TabList.SortOrder = Enum.SortOrder.LayoutOrder
     TabList.Parent = TabContainer
     
     local TabPadding = Instance.new("UIPadding")
-    TabPadding.PaddingLeft = UDim.new(0, 10)
-    TabPadding.PaddingRight = UDim.new(0, 10)
+    TabPadding.PaddingTop = UDim.new(0, 8)
+    TabPadding.PaddingLeft = UDim.new(0, 12)
+    TabPadding.PaddingRight = UDim.new(0, 12)
+    TabPadding.PaddingBottom = UDim.new(0, 8)
     TabPadding.Parent = TabContainer
     
     Window.TabContainer = TabContainer
@@ -459,11 +601,12 @@ function InfernixLib:CreateWindow(config)
     -- Content Container
     local ContentContainer = Instance.new("Frame")
     ContentContainer.Name = "ContentContainer"
-    ContentContainer.Size = UDim2.new(1, -200, 1, -68)
-    ContentContainer.Position = UDim2.new(0, 188, 0, 58)
+    ContentContainer.Size = UDim2.new(1, -208, 1, -68)
+    ContentContainer.Position = UDim2.new(0, 198, 0, 58)
     ContentContainer.BackgroundTransparency = 1
     ContentContainer.BorderSizePixel = 0
     ContentContainer.ClipsDescendants = true
+    ContentContainer.ZIndex = 5
     ContentContainer.Parent = MainFrame
     
     Window.ContentContainer = ContentContainer
@@ -473,12 +616,31 @@ function InfernixLib:CreateWindow(config)
         self.Visible = not self.Visible
         if self.Visible then
             MainFrame.Visible = true
-            MainFrame.Size = UDim2.new(0, 650, 0, 0)
-            Tween(MainFrame, {Size = UDim2.new(0, 650, 0, 480)}, 0.4, Enum.EasingStyle.Quint)
+            MainFrame.Size = UDim2.new(0, 680, 0, 0)
+            Tween(MainFrame, {Size = UDim2.new(0, 680, 0, 500)}, 0.4, Enum.EasingStyle.Quint)
         else
-            Tween(MainFrame, {Size = UDim2.new(0, 650, 0, 0)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
+            Tween(MainFrame, {Size = UDim2.new(0, 680, 0, 0)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
                 MainFrame.Visible = false
             end)
+        end
+    end
+    
+    -- Minimize UI (collapse to titlebar only)
+    function Window:Minimize()
+        self.Minimized = not self.Minimized
+        if self.Minimized then
+            -- Hide content but keep titlebar visible
+            TabContainer.Visible = false
+            ContentContainer.Visible = false
+            Tween(MainFrame, {Size = UDim2.new(0, 680, 0, 56)}, 0.3, Enum.EasingStyle.Quint)
+            Tween(MinimizeIcon, {Rotation = 180})
+        else
+            -- Restore full window
+            Tween(MainFrame, {Size = UDim2.new(0, 680, 0, 500)}, 0.3, Enum.EasingStyle.Quint).Completed:Connect(function()
+                TabContainer.Visible = true
+                ContentContainer.Visible = true
+            end)
+            Tween(MinimizeIcon, {Rotation = 0})
         end
     end
     
@@ -577,58 +739,61 @@ function InfernixLib:CreateWindow(config)
         -- Tab Button with modern design
         local TabButton = Instance.new("TextButton")
         TabButton.Name = name
-        TabButton.Size = UDim2.new(1, 0, 0, 44)
+        TabButton.Size = UDim2.new(1, 0, 0, 48)
         TabButton.BackgroundColor3 = Window.Theme.ElementBackground
         TabButton.BackgroundTransparency = 1
         TabButton.BorderSizePixel = 0
         TabButton.Text = ""
         TabButton.AutoButtonColor = false
-        TabButton.ClipsDescendants = true
+        TabButton.ClipsDescendants = false
+        TabButton.ZIndex = 6
         TabButton.Parent = TabContainer
         
         local TabButtonCorner = Instance.new("UICorner")
-        TabButtonCorner.CornerRadius = UDim.new(0, 8)
+        TabButtonCorner.CornerRadius = UDim.new(0, 10)
         TabButtonCorner.Parent = TabButton
         
-        -- Active indicator (left bar)
+        -- Active indicator (full background glow)
         local ActiveBar = Instance.new("Frame")
         ActiveBar.Name = "ActiveBar"
-        ActiveBar.Size = UDim2.new(0, 0, 0, 24)
-        ActiveBar.Position = UDim2.new(0, 0, 0.5, -12)
+        ActiveBar.Size = UDim2.new(0, 4, 1, -8)
+        ActiveBar.Position = UDim2.new(0, 0, 0, 4)
         ActiveBar.BackgroundColor3 = Window.Theme.Accent
+        ActiveBar.BackgroundTransparency = 1
         ActiveBar.BorderSizePixel = 0
+        ActiveBar.ZIndex = 7
         ActiveBar.Parent = TabButton
         
         local BarCorner = Instance.new("UICorner")
-        BarCorner.CornerRadius = UDim.new(0, 4)
+        BarCorner.CornerRadius = UDim.new(1, 0)
         BarCorner.Parent = ActiveBar
         
-        CreateGradient(ActiveBar, 90, {
-            {0, Window.Theme.AccentGradient[1]},
-            {1, Window.Theme.AccentGradient[2]}
-        })
+        -- Add animated gradient to active bar
+        CreateAnimatedGradient(ActiveBar, Window.Theme.AccentGradient, 4)
         
-        -- Tab Icon
+        -- Tab Icon with glow effect
         local TabIcon = Instance.new("ImageLabel")
         TabIcon.Name = "Icon"
-        TabIcon.Size = UDim2.new(0, 20, 0, 20)
-        TabIcon.Position = UDim2.new(0, 12, 0.5, -10)
+        TabIcon.Size = UDim2.new(0, 22, 0, 22)
+        TabIcon.Position = UDim2.new(0, 14, 0.5, -11)
         TabIcon.BackgroundTransparency = 1
         TabIcon.Image = icon or InfernixLib.Icons.Home
         TabIcon.ImageColor3 = Window.Theme.SubText
+        TabIcon.ZIndex = 8
         TabIcon.Parent = TabButton
         
         -- Tab Text
         local TabText = Instance.new("TextLabel")
         TabText.Name = "Label"
-        TabText.Size = UDim2.new(1, -45, 1, 0)
-        TabText.Position = UDim2.new(0, 40, 0, 0)
+        TabText.Size = UDim2.new(1, -50, 1, 0)
+        TabText.Position = UDim2.new(0, 44, 0, 0)
         TabText.BackgroundTransparency = 1
         TabText.Text = name
         TabText.TextColor3 = Window.Theme.SubText
-        TabText.TextSize = 13
-        TabText.Font = Enum.Font.GothamMedium
+        TabText.TextSize = 14
+        TabText.Font = Enum.Font.GothamSemibold
         TabText.TextXAlignment = Enum.TextXAlignment.Left
+        TabText.ZIndex = 8
         TabText.Parent = TabButton
         
         Tab.Button = TabButton
@@ -672,19 +837,22 @@ function InfernixLib:CreateWindow(config)
                 Tween(tab.Button, {BackgroundTransparency = 1})
                 Tween(tab.Icon, {ImageColor3 = Window.Theme.SubText})
                 Tween(tab.Text, {TextColor3 = Window.Theme.SubText})
-                Tween(tab.ActiveBar, {Size = UDim2.new(0, 0, 0, 24)}, 0.2)
+                Tween(tab.ActiveBar, {BackgroundTransparency = 1}, 0.2)
                 tab.Content.Visible = false
             end
             
-            Tween(TabButton, {BackgroundTransparency = 0})
-            Tween(TabIcon, {ImageColor3 = Window.Theme.Accent})
+            Tween(TabButton, {BackgroundTransparency = 0.5})
+            Tween(TabIcon, {ImageColor3 = Window.Theme.AccentGradient[1]})
             Tween(TabText, {TextColor3 = Window.Theme.Text})
-            Tween(ActiveBar, {Size = UDim2.new(0, 3, 0, 24)}, 0.3, Enum.EasingStyle.Back)
+            Tween(ActiveBar, {BackgroundTransparency = 0}, 0.3, Enum.EasingStyle.Back)
             TabContent.Visible = true
             Window.CurrentTab = Tab
         end
         
-        TabButton.MouseButton1Click:Connect(SelectTab)
+        TabButton.MouseButton1Click:Connect(function()
+            SelectTab()
+            CreateRipple(TabButton, TabButton.AbsoluteSize.X/2, TabButton.AbsoluteSize.Y/2)
+        end)
         
         TabButton.MouseEnter:Connect(function()
             if Window.CurrentTab ~= Tab then
@@ -745,32 +913,45 @@ function InfernixLib:CreateWindow(config)
             
             local ButtonFrame = Instance.new("Frame")
             ButtonFrame.Name = "Button"
-            ButtonFrame.Size = UDim2.new(1, 0, 0, 40)
+            ButtonFrame.Size = UDim2.new(1, 0, 0, 44)
             ButtonFrame.BackgroundColor3 = Window.Theme.ElementBackground
+            ButtonFrame.BackgroundTransparency = 0.3
             ButtonFrame.BorderSizePixel = 0
             ButtonFrame.Parent = TabContent
             
             local ButtonCorner = Instance.new("UICorner")
-            ButtonCorner.CornerRadius = UDim.new(0, 8)
+            ButtonCorner.CornerRadius = UDim.new(0, 10)
             ButtonCorner.Parent = ButtonFrame
+            
+            -- Add acrylic blur
+            CreateAcrylicBlur(ButtonFrame)
+            
+            -- Add gradient border
+            local ButtonBorder = Instance.new("UIStroke")
+            ButtonBorder.Color = Window.Theme.Accent
+            ButtonBorder.Transparency = 0.7
+            ButtonBorder.Thickness = 1
+            ButtonBorder.Parent = ButtonFrame
             
             local ButtonButton = Instance.new("TextButton")
             ButtonButton.Name = "ButtonButton"
             ButtonButton.Size = UDim2.new(1, 0, 1, 0)
             ButtonButton.BackgroundTransparency = 1
             ButtonButton.Text = ""
+            ButtonButton.ZIndex = 2
             ButtonButton.Parent = ButtonFrame
             
             local ButtonLabel = Instance.new("TextLabel")
             ButtonLabel.Name = "Label"
-            ButtonLabel.Size = UDim2.new(1, -20, 1, 0)
-            ButtonLabel.Position = UDim2.new(0, 10, 0, 0)
+            ButtonLabel.Size = UDim2.new(1, -24, 1, 0)
+            ButtonLabel.Position = UDim2.new(0, 12, 0, 0)
             ButtonLabel.BackgroundTransparency = 1
             ButtonLabel.Text = Button.Name
             ButtonLabel.TextColor3 = Window.Theme.Text
             ButtonLabel.TextSize = 14
-            ButtonLabel.Font = Enum.Font.Gotham
+            ButtonLabel.Font = Enum.Font.GothamSemibold
             ButtonLabel.TextXAlignment = Enum.TextXAlignment.Left
+            ButtonLabel.ZIndex = 3
             ButtonLabel.Parent = ButtonFrame
             
             ButtonButton.MouseButton1Click:Connect(function()
@@ -778,15 +959,24 @@ function InfernixLib:CreateWindow(config)
                 local size = ButtonButton.AbsoluteSize
                 CreateRipple(ButtonFrame, Mouse.X - pos.X, Mouse.Y - pos.Y)
                 
+                -- Flash effect
+                Tween(ButtonBorder, {Transparency = 0}, 0.1)
+                wait(0.1)
+                Tween(ButtonBorder, {Transparency = 0.7}, 0.3)
+                
                 pcall(Button.Callback)
             end)
             
             ButtonButton.MouseEnter:Connect(function()
-                Tween(ButtonFrame, {BackgroundColor3 = Window.Theme.TertiaryBackground})
+                Tween(ButtonFrame, {BackgroundTransparency = 0.1})
+                Tween(ButtonBorder, {Transparency = 0.4})
+                Tween(ButtonLabel, {TextColor3 = Window.Theme.AccentGradient[1]})
             end)
             
             ButtonButton.MouseLeave:Connect(function()
-                Tween(ButtonFrame, {BackgroundColor3 = Window.Theme.ElementBackground})
+                Tween(ButtonFrame, {BackgroundTransparency = 0.3})
+                Tween(ButtonBorder, {Transparency = 0.7})
+                Tween(ButtonLabel, {TextColor3 = Window.Theme.Text})
             end)
             
             Button.Element = ButtonFrame
@@ -811,34 +1001,46 @@ function InfernixLib:CreateWindow(config)
             
             local ToggleFrame = Instance.new("Frame")
             ToggleFrame.Name = "Toggle"
-            ToggleFrame.Size = UDim2.new(1, 0, 0, 40)
+            ToggleFrame.Size = UDim2.new(1, 0, 0, 44)
             ToggleFrame.BackgroundColor3 = Window.Theme.ElementBackground
+            ToggleFrame.BackgroundTransparency = 0.3
             ToggleFrame.BorderSizePixel = 0
             ToggleFrame.Parent = TabContent
             
             local ToggleCorner = Instance.new("UICorner")
-            ToggleCorner.CornerRadius = UDim.new(0, 8)
+            ToggleCorner.CornerRadius = UDim.new(0, 10)
             ToggleCorner.Parent = ToggleFrame
+            
+            CreateAcrylicBlur(ToggleFrame)
+            
+            local ToggleBorder = Instance.new("UIStroke")
+            ToggleBorder.Color = Window.Theme.Accent
+            ToggleBorder.Transparency = 0.7
+            ToggleBorder.Thickness = 1
+            ToggleBorder.Parent = ToggleFrame
             
             local ToggleLabel = Instance.new("TextLabel")
             ToggleLabel.Name = "Label"
-            ToggleLabel.Size = UDim2.new(1, -60, 1, 0)
-            ToggleLabel.Position = UDim2.new(0, 10, 0, 0)
+            ToggleLabel.Size = UDim2.new(1, -72, 1, 0)
+            ToggleLabel.Position = UDim2.new(0, 12, 0, 0)
             ToggleLabel.BackgroundTransparency = 1
             ToggleLabel.Text = Toggle.Name
             ToggleLabel.TextColor3 = Window.Theme.Text
             ToggleLabel.TextSize = 14
-            ToggleLabel.Font = Enum.Font.Gotham
+            ToggleLabel.Font = Enum.Font.GothamSemibold
             ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+            ToggleLabel.ZIndex = 2
             ToggleLabel.Parent = ToggleFrame
             
             local ToggleButton = Instance.new("TextButton")
             ToggleButton.Name = "ToggleButton"
-            ToggleButton.Size = UDim2.new(0, 45, 0, 24)
-            ToggleButton.Position = UDim2.new(1, -55, 0.5, -12)
+            ToggleButton.Size = UDim2.new(0, 48, 0, 26)
+            ToggleButton.Position = UDim2.new(1, -60, 0.5, -13)
             ToggleButton.BackgroundColor3 = Window.Theme.ElementBorder
+            ToggleButton.BackgroundTransparency = 0
             ToggleButton.BorderSizePixel = 0
             ToggleButton.Text = ""
+            ToggleButton.ZIndex = 2
             ToggleButton.Parent = ToggleFrame
             
             local ToggleButtonCorner = Instance.new("UICorner")
@@ -847,25 +1049,47 @@ function InfernixLib:CreateWindow(config)
             
             local ToggleIndicator = Instance.new("Frame")
             ToggleIndicator.Name = "Indicator"
-            ToggleIndicator.Size = UDim2.new(0, 18, 0, 18)
-            ToggleIndicator.Position = UDim2.new(0, 3, 0.5, -9)
-            ToggleIndicator.BackgroundColor3 = Window.Theme.Text
+            ToggleIndicator.Size = UDim2.new(0, 20, 0, 20)
+            ToggleIndicator.Position = UDim2.new(0, 3, 0.5, -10)
+            ToggleIndicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             ToggleIndicator.BorderSizePixel = 0
+            ToggleIndicator.ZIndex = 3
             ToggleIndicator.Parent = ToggleButton
             
             local IndicatorCorner = Instance.new("UICorner")
             IndicatorCorner.CornerRadius = UDim.new(1, 0)
             IndicatorCorner.Parent = ToggleIndicator
             
+            -- Add glow effect to indicator
+            local IndicatorGlow = Instance.new("ImageLabel")
+            IndicatorGlow.Size = UDim2.new(1, 10, 1, 10)
+            IndicatorGlow.Position = UDim2.new(0.5, 0, 0.5, 0)
+            IndicatorGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+            IndicatorGlow.BackgroundTransparency = 1
+            IndicatorGlow.Image = "rbxassetid://5028857084"
+            IndicatorGlow.ImageColor3 = Window.Theme.Accent
+            IndicatorGlow.ImageTransparency = 1
+            IndicatorGlow.ZIndex = 2
+            IndicatorGlow.Parent = ToggleIndicator
+            
             local function UpdateToggle(value)
                 Toggle.CurrentValue = value
                 
                 if value then
-                    Tween(ToggleButton, {BackgroundColor3 = Window.Theme.Accent})
-                    Tween(ToggleIndicator, {Position = UDim2.new(1, -21, 0.5, -9)})
+                    Tween(ToggleButton, {BackgroundColor3 = Window.Theme.AccentGradient[1]})
+                    Tween(ToggleIndicator, {Position = UDim2.new(1, -23, 0.5, -10)})
+                    Tween(IndicatorGlow, {ImageTransparency = 0.5})
+                    CreateAnimatedGradient(ToggleButton, Window.Theme.AccentGradient, 3)
                 else
                     Tween(ToggleButton, {BackgroundColor3 = Window.Theme.ElementBorder})
-                    Tween(ToggleIndicator, {Position = UDim2.new(0, 3, 0.5, -9)})
+                    Tween(ToggleIndicator, {Position = UDim2.new(0, 3, 0.5, -10)})
+                    Tween(IndicatorGlow, {ImageTransparency = 1})
+                    -- Remove gradient
+                    for _, child in pairs(ToggleButton:GetChildren()) do
+                        if child:IsA("UIGradient") then
+                            child:Destroy()
+                        end
+                    end
                 end
                 
                 Window:RegisterFlag(Toggle.Flag, value)
@@ -874,6 +1098,17 @@ function InfernixLib:CreateWindow(config)
             
             ToggleButton.MouseButton1Click:Connect(function()
                 UpdateToggle(not Toggle.CurrentValue)
+                CreateRipple(ToggleButton, ToggleButton.AbsoluteSize.X/2, ToggleButton.AbsoluteSize.Y/2)
+            end)
+            
+            ToggleFrame.MouseEnter:Connect(function()
+                Tween(ToggleFrame, {BackgroundTransparency = 0.1})
+                Tween(ToggleBorder, {Transparency = 0.4})
+            end)
+            
+            ToggleFrame.MouseLeave:Connect(function()
+                Tween(ToggleFrame, {BackgroundTransparency = 0.3})
+                Tween(ToggleBorder, {Transparency = 0.7})
             end)
             
             Toggle.Element = ToggleFrame
