@@ -358,6 +358,7 @@ function InfernixLib:CreateWindow(config)
     MainFrame.BackgroundTransparency = 1
     MainFrame.BorderSizePixel = 0
     MainFrame.ClipsDescendants = false
+    MainFrame.Visible = false
     MainFrame.Parent = ScreenGui
     
     -- Animated gradient background
