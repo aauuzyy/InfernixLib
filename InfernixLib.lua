@@ -44,6 +44,15 @@ if not task then
     }
 end
 
+-- File system fallbacks
+local isfile = isfile or function() return false end
+local readfile = readfile or function() return "" end
+local writefile = writefile or function() end
+
+-- Other utility fallbacks
+local tick = tick or os.clock or function() return 0 end
+local pcall = pcall or function(f, ...) return true, f(...) end
+
 -- Windows 11 Icon Assets (Public Roblox Assets)
 local Icons = {
     Close = "rbxassetid://9886659671",
