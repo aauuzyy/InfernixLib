@@ -360,18 +360,15 @@ function InfernixLib:CreateExecutor(config)
     TabContainer.BorderSizePixel = 0
     TabContainer.ScrollBarThickness = 4
     TabContainer.ScrollBarImageColor3 = Color3.fromRGB(60, 60, 60)
-    TabContainer.CanvasSize = UDim2.new(0, 0, 0, 36)
+    TabContainer.ScrollingDirection = Enum.ScrollingDirection.X
+    TabContainer.CanvasSize = UDim2.new(0, 0, 1, 0)
+    TabContainer.AutomaticCanvasSize = Enum.AutomaticSize.X
     TabContainer.Parent = Window
     
     local TabList = Instance.new("UIListLayout")
     TabList.FillDirection = Enum.FillDirection.Horizontal
     TabList.Padding = UDim.new(0, 4)
     TabList.Parent = TabContainer
-    
-    -- Update canvas size when tabs are added
-    TabList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        TabContainer.CanvasSize = UDim2.new(0, TabList.AbsoluteContentSize.X, 0, 36)
-    end)
     
     -- Editor Toolbar (Copy, New File, Delete, Undo, Redo)
     local Toolbar = Instance.new("Frame")
