@@ -18,6 +18,20 @@ local HttpService = game:GetService("HttpService")
 -- Variables
 local LocalPlayer = Players.LocalPlayer
 
+-- Get the appropriate parent for GUIs
+local function getGuiParent()
+    if gethui then
+        return gethui()
+    elseif syn and syn.protect_gui then
+        local gui = Instance.new("ScreenGui")
+        syn.protect_gui(gui)
+        gui.Parent = CoreGui
+        return CoreGui
+    else
+        return CoreGui
+    end
+end
+
 -- Windows 11 Icon Assets (Public Roblox Assets)
 local Icons = {
     Close = "rbxassetid://9886659671",
@@ -224,11 +238,7 @@ local function CreateKeySystem(callback)
     KeyGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     KeyGui.ResetOnSpawn = false
     
-    if gethui then
-        KeyGui.Parent = gethui()
-    else
-        KeyGui.Parent = CoreGui
-    end
+    KeyGui.Parent = getGuiParent()
     
     -- Main Window
     local KeyWindow = Instance.new("Frame")
@@ -555,11 +565,7 @@ local function createExecutorUI(Executor, config)
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ScreenGui.ResetOnSpawn = false
     
-    if gethui then
-        ScreenGui.Parent = gethui()
-    else
-        ScreenGui.Parent = CoreGui
-    end
+    ScreenGui.Parent = getGuiParent()
     
     -- Main Window
     local Window = Instance.new("Frame")
@@ -1273,11 +1279,7 @@ function InfernixLib:Notify(config)
     NotifGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     NotifGui.ResetOnSpawn = false
     
-    if gethui then
-        NotifGui.Parent = gethui()
-    else
-        NotifGui.Parent = CoreGui
-    end
+    NotifGui.Parent = getGuiParent()
     
     -- Notification Box
     local NotifBox = Instance.new("Frame")
