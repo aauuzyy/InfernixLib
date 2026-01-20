@@ -27,13 +27,14 @@ local Icons = {
     Minimize = "rbxassetid://9886659276",
     Icon = "rbxassetid://9886659555",
     DropShadow = "rbxassetid://9886919127",
-    Copy = "rbxassetid://9886650687",
-    Paste = "rbxassetid://9886651142",
-    Cut = "rbxassetid://9886651257",
-    Delete = "rbxassetid://9886650877",
-    NewFile = "rbxassetid://9886650654",
-    Undo = "rbxassetid://9886651126",
-    Redo = "rbxassetid://9886651034"
+    -- ActionBar/Toolbar icons from RemoteSpy
+    NavigatePrevious = "rbxassetid://9887696242",
+    NavigateNext = "rbxassetid://9887978919",
+    Copy = "rbxassetid://9887696628",
+    Save = "rbxassetid://9932819855",
+    Delete = "rbxassetid://9887696922",
+    Traceback = "rbxassetid://9887697255",
+    CopyPath = "rbxassetid://9887697099"
 }
 
 -- Utility Functions
@@ -408,11 +409,21 @@ function InfernixLib:CreateExecutor(config)
     local CodeBox -- Forward reference
     
     -- Toolbar buttons
-    createToolbarButton(Icons.NewFile, "New File", function()
-        if CodeBox then
-            CodeBox.Text = "-- New Script\n"
-        end
+    createToolbarButton(Icons.NavigatePrevious, "Back", function()
+        print("Navigate back")
     end)
+    
+    createToolbarButton(Icons.NavigateNext, "Forward", function()
+        print("Navigate forward")
+    end)
+    
+    -- Separator
+    local Separator1 = Instance.new("Frame")
+    Separator1.Size = UDim2.new(0, 1, 0, 24)
+    Separator1.Position = UDim2.new(0, 0, 0, 4)
+    Separator1.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    Separator1.BorderSizePixel = 0
+    Separator1.Parent = Toolbar
     
     createToolbarButton(Icons.Copy, "Copy", function()
         if CodeBox then
@@ -420,16 +431,9 @@ function InfernixLib:CreateExecutor(config)
         end
     end)
     
-    createToolbarButton(Icons.Paste, "Paste", function()
-        if CodeBox and getclipboard then
-            CodeBox.Text = getclipboard()
-        end
-    end)
-    
-    createToolbarButton(Icons.Cut, "Cut", function()
+    createToolbarButton(Icons.Save, "Save", function()
         if CodeBox then
-            setclipboard(CodeBox.Text)
-            CodeBox.Text = ""
+            print("Saved:", CodeBox.Text)
         end
     end)
     
@@ -437,24 +441,6 @@ function InfernixLib:CreateExecutor(config)
         if CodeBox then
             CodeBox.Text = ""
         end
-    end)
-    
-    -- Separator
-    local Separator = Instance.new("Frame")
-    Separator.Size = UDim2.new(0, 1, 0, 24)
-    Separator.Position = UDim2.new(0, 0, 0, 4)
-    Separator.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    Separator.BorderSizePixel = 0
-    Separator.Parent = Toolbar
-    
-    createToolbarButton(Icons.Undo, "Undo", function()
-        -- Undo functionality would require history tracking
-        print("Undo not yet implemented")
-    end)
-    
-    createToolbarButton(Icons.Redo, "Redo", function()
-        -- Redo functionality would require history tracking
-        print("Redo not yet implemented")
     end)
     
     -- Code Editor/Console Area
