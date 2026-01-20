@@ -663,10 +663,25 @@ function InfernixLib:CreateExecutor(config)
         
         tab.MouseButton1Click:Connect(function()
             URLText.Text = "https://infernix.executor/" .. name:lower():gsub(" ", "-")
+            Executor.CurrentTab = tabObject
         end)
         
-        table.insert(self.Tabs, tab)
-        return tab
+        local tabObject = {
+            Name = name,
+            Button = tab
+        }
+        
+        tabObject.SetCode = function(self, code)
+            CodeBox.Text = code
+        end
+        
+        table.insert(self.Tabs, tabObject)
+        return tabObject
+    end
+    
+    -- Alias for compatibility
+    function Executor:CreateTab(name)
+        return self:AddTab(name)
     end
     
     function Executor:Show()
