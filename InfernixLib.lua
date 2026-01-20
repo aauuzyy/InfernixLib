@@ -35,6 +35,15 @@ end
 -- Get the loadstring function (different executors use different names)
 local loadstring = loadstring or load or function() error("Executor does not support loadstring") end
 
+-- Task library fallback for older executors
+if not task then
+    task = {
+        wait = wait or function(t) return RunService.Heartbeat:Wait() end,
+        spawn = spawn or function(f) coroutine.wrap(f)() end,
+        delay = delay or function(t, f) spawn(function() wait(t) f() end) end
+    }
+end
+
 -- Windows 11 Icon Assets (Public Roblox Assets)
 local Icons = {
     Close = "rbxassetid://9886659671",
