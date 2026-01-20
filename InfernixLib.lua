@@ -376,8 +376,13 @@ function InfernixLib:CreateExecutor(config)
         local button = Instance.new("TextButton")
         button.Size = UDim2.new(0, 32, 0, 32)
         button.BackgroundTransparency = 1
+        button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
         button.Text = ""
         button.Parent = Toolbar
+        
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 4)
+        corner.Parent = button
         
         local iconLabel = Instance.new("ImageLabel")
         iconLabel.Size = UDim2.new(0, 16, 0, 16)
@@ -389,14 +394,13 @@ function InfernixLib:CreateExecutor(config)
         iconLabel.Parent = button
         
         button.MouseEnter:Connect(function()
-            button.BackgroundTransparency = 0
-            button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-            iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
+            Tween(button, {BackgroundTransparency = 0}, 0.15)
+            Tween(iconLabel, {ImageColor3 = Color3.fromRGB(255, 255, 255)}, 0.15)
         end)
         
         button.MouseLeave:Connect(function()
-            button.BackgroundTransparency = 1
-            iconLabel.ImageColor3 = Color3.fromRGB(200, 200, 200)
+            Tween(button, {BackgroundTransparency = 1}, 0.15)
+            Tween(iconLabel, {ImageColor3 = Color3.fromRGB(200, 200, 200)}, 0.15)
         end)
         
         if callback then
