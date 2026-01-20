@@ -487,73 +487,25 @@ function InfernixLib:CreateExecutor(config)
     local function createButton(text, callback, isPrimary)
         local button = Instance.new("TextButton")
         button.Size = UDim2.new(0, 90, 0, 32)
-        button.AutoButtonColor = false
+        button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         button.Text = text
-        button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        button.TextSize = 13
-        button.Font = Enum.Font.GothamMedium
+        button.TextColor3 = Color3.fromRGB(200, 200, 200)
+        button.TextSize = 11
+        button.Font = Enum.Font.Gotham
         button.Parent = ButtonContainer
         
-        -- Set colors based on button type
-        if isPrimary then
-            button.BackgroundColor3 = Color3.fromRGB(0, 120, 212) -- Blue accent
-        else
-            button.BackgroundColor3 = Color3.fromRGB(45, 45, 48) -- Dark gray
-        end
-        
-        -- Add gradient for depth
-        local gradient = Instance.new("UIGradient")
-        gradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
-        })
-        gradient.Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 0.95),
-            NumberSequenceKeypoint.new(1, 0.98)
-        })
-        gradient.Rotation = 90
-        gradient.Parent = button
-        
-        -- Rounded corners
         local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 5)
+        corner.CornerRadius = UDim.new(0, 4)
         corner.Parent = button
         
-        -- Stroke for definition
-        local stroke = Instance.new("UIStroke")
-        stroke.Color = Color3.fromRGB(255, 255, 255)
-        stroke.Transparency = 0.85
-        stroke.Thickness = 1
-        stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        stroke.Parent = button
-        
-        -- Button callbacks
         button.MouseButton1Click:Connect(callback)
         
         button.MouseEnter:Connect(function()
-            if isPrimary then
-                Tween(button, {BackgroundColor3 = Color3.fromRGB(0, 103, 192)}, 0.15)
-            else
-                Tween(button, {BackgroundColor3 = Color3.fromRGB(55, 55, 58)}, 0.15)
-            end
-            Tween(stroke, {Transparency = 0.7}, 0.15)
+            Tween(button, {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}, 0.15)
         end)
         
         button.MouseLeave:Connect(function()
-            if isPrimary then
-                Tween(button, {BackgroundColor3 = Color3.fromRGB(0, 120, 212)}, 0.15)
-            else
-                Tween(button, {BackgroundColor3 = Color3.fromRGB(45, 45, 48)}, 0.15)
-            end
-            Tween(stroke, {Transparency = 0.85}, 0.15)
-        end)
-        
-        button.MouseButton1Down:Connect(function()
-            Tween(button, {Size = UDim2.new(0, 88, 0, 31)}, 0.1)
-        end)
-        
-        button.MouseButton1Up:Connect(function()
-            Tween(button, {Size = UDim2.new(0, 90, 0, 32)}, 0.1)
+            Tween(button, {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}, 0.15)
         end)
         
         return button
