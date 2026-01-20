@@ -231,10 +231,11 @@ local function CreateKeySystem(callback)
     
     -- Main Window
     local KeyWindow = Instance.new("Frame")
-    KeyWindow.Size = UDim2.new(0, 450, 0, 300)
-    KeyWindow.Position = UDim2.new(0.5, -225, 0.5, -150)
+    KeyWindow.Size = UDim2.new(0, 400, 0, 240)
+    KeyWindow.Position = UDim2.new(0.5, -200, 0.5, -120)
     KeyWindow.BackgroundTransparency = 1
     KeyWindow.BorderSizePixel = 0
+    KeyWindow.ClipsDescendants = true
     KeyWindow.Parent = KeyGui
     
     -- Background with acrylic effect
@@ -256,34 +257,78 @@ local function CreateKeySystem(callback)
     KeyBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     KeyBorder.Parent = KeyBackground
     
+    -- Apply acrylic blur
+    local KeyAcrylicBlur = Acrylic.AcrylicBlur(0.001)
+    KeyAcrylicBlur.Frame.Parent = KeyBackground
+    KeyAcrylicBlur.AddParent(KeyWindow)
+    
+    -- Close Button
+    local CloseBtn = Instance.new("TextButton")
+    CloseBtn.Size = UDim2.new(0, 40, 0, 40)
+    CloseBtn.Position = UDim2.new(1, -40, 0, 0)
+    CloseBtn.BackgroundTransparency = 1
+    CloseBtn.BackgroundColor3 = Color3.fromRGB(196, 43, 28)
+    CloseBtn.Text = ""
+    CloseBtn.AutoButtonColor = false
+    CloseBtn.Parent = KeyWindow
+    
+    local CloseCorner = Instance.new("UICorner")
+    CloseCorner.CornerRadius = UDim.new(0, 8)
+    CloseCorner.Parent = CloseBtn
+    
+    local CloseIcon = Instance.new("ImageLabel")
+    CloseIcon.Size = UDim2.new(0, 12, 0, 12)
+    CloseIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+    CloseIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+    CloseIcon.Image = Icons.Close
+    CloseIcon.BackgroundTransparency = 1
+    CloseIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    CloseIcon.Parent = CloseBtn
+    
+    CloseBtn.MouseEnter:Connect(function()
+        Tween(CloseBtn, {BackgroundTransparency = 0}, 0.15)
+    end)
+    
+    CloseBtn.MouseLeave:Connect(function()
+        Tween(CloseBtn, {BackgroundTransparency = 1}, 0.15)
+    end)
+    
+    CloseBtn.MouseButton1Click:Connect(function()
+        if KeyAcrylicBlur and KeyAcrylicBlur.Model then
+            KeyAcrylicBlur.Model:Destroy()
+        end
+        KeyGui:Destroy()
+        callback(false)
+    end)
+    
     -- Title
     local KeyTitle = Instance.new("TextLabel")
-    KeyTitle.Size = UDim2.new(1, -40, 0, 60)
-    KeyTitle.Position = UDim2.new(0, 20, 0, 30)
+    KeyTitle.Size = UDim2.new(1, -60, 0, 40)
+    KeyTitle.Position = UDim2.new(0, 20, 0, 20)
     KeyTitle.BackgroundTransparency = 1
     KeyTitle.Text = "Enter Key"
     KeyTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    KeyTitle.TextSize = 24
+    KeyTitle.TextSize = 20
     KeyTitle.Font = Enum.Font.GothamBold
     KeyTitle.TextXAlignment = Enum.TextXAlignment.Center
     KeyTitle.Parent = KeyWindow
     
     -- Tip Text
     local TipText = Instance.new("TextLabel")
-    TipText.Size = UDim2.new(1, -40, 0, 30)
-    TipText.Position = UDim2.new(0, 20, 0, 90)
+    TipText.Size = UDim2.new(1, -40, 0, 24)
+    TipText.Position = UDim2.new(0, 20, 0, 60)
     TipText.BackgroundTransparency = 1
     TipText.Text = "Join our Discord for daily keys!"
     TipText.TextColor3 = Color3.fromRGB(180, 180, 180)
-    TipText.TextSize = 12
+    TipText.TextSize = 11
     TipText.Font = Enum.Font.Gotham
     TipText.TextXAlignment = Enum.TextXAlignment.Center
     TipText.Parent = KeyWindow
     
     -- Key Input Container
     local InputContainer = Instance.new("Frame")
-    InputContainer.Size = UDim2.new(1, -80, 0, 50)
-    InputContainer.Position = UDim2.new(0, 40, 0, 140)
+    InputContainer.Size = UDim2.new(1, -60, 0, 45)
+    InputContainer.Position = UDim2.new(0, 30, 0, 100)
     InputContainer.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     InputContainer.BorderSizePixel = 0
     InputContainer.Parent = KeyWindow
@@ -310,11 +355,11 @@ local function CreateKeySystem(callback)
     -- Status Text
     local StatusText = Instance.new("TextLabel")
     StatusText.Size = UDim2.new(1, -40, 0, 30)
-    StatusText.Position = UDim2.new(0, 20, 0, 210)
+    StatusText.Position = UDim2.new(0, 20, 0, 160)
     StatusText.BackgroundTransparency = 1
     StatusText.Text = ""
     StatusText.TextColor3 = Color3.fromRGB(220, 80, 80)
-    StatusText.TextSize = 13
+    StatusText.TextSize = 12
     StatusText.Font = Enum.Font.GothamMedium
     StatusText.TextXAlignment = Enum.TextXAlignment.Center
     StatusText.Parent = KeyWindow
@@ -366,8 +411,13 @@ local function CreateKeySystem(callback)
             Tween(StatusText, {TextTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
             Tween(KeyBorder, {Transparency = 1}, 0.3, Enum.EasingStyle.Linear)
             Tween(InputContainer, {BackgroundTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+            Tween(CloseIcon, {ImageTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
             
             task.wait(0.3)
+            
+            if KeyAcrylicBlur and KeyAcrylicBlur.Model then
+                KeyAcrylicBlur.Model:Destroy()
+            end
             KeyGui:Destroy()
             
             -- Show success notification
