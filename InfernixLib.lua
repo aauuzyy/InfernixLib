@@ -478,7 +478,7 @@ function InfernixLib:CreateExecutor(config)
     }
     
     -- Define methods immediately so they're available
-    function Executor:Show()
+    Executor.Show = function(self)
         if not self.UICreated then
             -- UI not created yet, queue the show
             self._queuedShow = true
@@ -498,13 +498,13 @@ function InfernixLib:CreateExecutor(config)
         end)
     end
     
-    function Executor:Hide()
+    Executor.Hide = function(self)
         if not self.UICreated then return end
         self._Window.Visible = false
         self.Visible = false
     end
     
-    function Executor:Toggle()
+    Executor.Toggle = function(self)
         if not self.UICreated then return end
         if self._Window.Visible then
             self:Hide()
@@ -513,14 +513,14 @@ function InfernixLib:CreateExecutor(config)
         end
     end
     
-    function Executor:AddTab(name)
+    Executor.AddTab = function(self, name)
         if not self.UICreated then
             error("Cannot add tab before UI is created")
         end
         return self._addTabInternal(name)
     end
     
-    function Executor:CreateTab(name)
+    Executor.CreateTab = function(self, name)
         return self:AddTab(name)
     end
     
