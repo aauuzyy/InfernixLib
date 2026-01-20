@@ -1,254 +1,95 @@
 # InfernixLib 🔥
 
-**A modern, feature-rich UI library for Roblox script development**
+**A modern Windows 11 style script executor for Roblox**
 
-InfernixLib is a powerful and beautiful UI library designed for Roblox injectors, built from the ground up with smooth animations, comprehensive components, and an intuitive API.
+InfernixLib is a beautiful and powerful script executor UI library with Windows 11 styling, featuring acrylic blur effects, smooth animations, and a complete authentication system.
 
 ## ✨ Features
 
-- 🎨 **Multiple Themes** - Dark, Light, and Ocean themes built-in
-- 🎯 **Rich Component Library** - Buttons, Toggles, Sliders, Inputs, Dropdowns, Color Pickers, Keybinds, and more
-- 💾 **Configuration Saving** - Automatic save/load of user settings
-- 🔔 **Notification System** - Beautiful animated notifications
-- ⚡ **Smooth Animations** - Butter-smooth tweening throughout
-- 📱 **Clean Design** - Modern, intuitive interface
-- 🔧 **Easy to Use** - Simple, straightforward API
-- 🎭 **Draggable Windows** - Fully movable UI
-- ⌨️ **Keybind Support** - Toggle UI visibility with custom keybinds
+- 🪟 **Windows 11 Style** - Authentic Windows 11 design with acrylic blur
+- 🔐 **Key System** - Built-in authentication with Pastebin integration
+- 📝 **Multi-Tab Support** - Create, rename, and manage multiple script tabs
+- ↩️ **Undo/Redo** - Full history tracking for your code
+- 🔔 **Notification System** - Windows 11 style notification toasts with stacking
+- 💾 **Code Persistence** - Automatically saves tab content between sessions
+- ⚡ **Smooth Animations** - Fade in/out transitions with tweening
+- 🎨 **Acrylic Effects** - Glass material blur effects throughout UI
+- 🎯 **Script Execution** - Execute and inject Lua scripts
+- ⌨️ **Keybind Support** - Toggle UI with LeftControl
 
 ## 🚀 Quick Start
 
 ### Installation
 
 ```lua
-local InfernixLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/aauuzyy/InfernixLib/main/InfernixLib.lua"))()
+math.randomseed(tick())
+local InfernixLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/aauuzyy/InfernixLib/main/InfernixLib.lua?v=" .. math.random(1, 999999)))()
 ```
 
 ### Basic Usage
 
 ```lua
--- Create a window
-local Window = InfernixLib:CreateWindow({
-    Name = "My Script Hub",
-    LoadingTitle = "InfernixLib",
-    LoadingSubtitle = "Loading...",
-    Theme = "Dark",
-    ToggleKey = Enum.KeyCode.RightControl,
-    ConfigSaving = {
-        Enabled = true,
-        FolderName = "InfernixLib",
-        FileName = "MyConfig",
-        AutoSave = true
-    }
+-- Create executor
+local Executor = InfernixLib:CreateExecutor({
+    Name = "Infernix Executor"
 })
 
--- Create a tab
-local Tab = Window:CreateTab("Main", 4483362458)
+-- Show the executor (will prompt for key first)
+Executor:Show()
+```
 
--- Add a button
-Tab:CreateButton({
-    Name = "Click Me!",
-    Callback = function()
-        print("Button clicked!")
-    end
+## 📚 API Reference
+
+### CreateExecutor
+
+Create the main executor window:
+
+```lua
+local Executor = InfernixLib:CreateExecutor({
+    Name = "Executor Name" -- Optional, defaults to "Infernix Executor"
 })
 ```
 
-## 📚 Components
-
-### Window
-
-Create the main UI window:
+### Executor Methods
 
 ```lua
-local Window = InfernixLib:CreateWindow({
-    Name = "Window Name",
-    LoadingTitle = "Loading Title",
-    LoadingSubtitle = "Loading Subtitle",
-    Theme = "Dark", -- "Dark", "Light", or "Ocean"
-    ToggleKey = Enum.KeyCode.RightControl,
-    ConfigSaving = {
-        Enabled = true,
-        FolderName = "InfernixLib",
-        FileName = "Config",
-        AutoSave = true
-    }
-})
+-- Show the executor (prompts for key if not authenticated)
+Executor:Show()
+
+-- Hide the executor
+Executor:Hide()
+
+-- Toggle visibility
+Executor:Toggle()
+
+-- Add a new tab
+local tab = Executor:AddTab("Tab Name")
+
+-- Also available as CreateTab for compatibility
+local tab = Executor:CreateTab("Tab Name")
 ```
 
-### Tab
+### Tab Management
 
-Create tabs to organize your UI:
+- **Create New Tab**: Click the file icon button in the toolbar
+- **Rename Tab**: Double-click on a tab to rename it
+- **Delete Tab**: Click the X button on a tab
+- **Switch Tabs**: Click on any tab to switch to it
 
-```lua
-local Tab = Window:CreateTab("Tab Name", IconID)
-```
+Tabs automatically save their code content and persist between sessions.
 
-### Section
+### Undo/Redo
 
-Add section headers to organize elements:
+Use the arrow buttons in the toolbar to undo or redo changes to your code. History tracks up to 50 changes.
 
-```lua
-Tab:CreateSection("Section Name")
-```
+### Script Execution
 
-### Button
-
-Interactive buttons:
-
-```lua
-Tab:CreateButton({
-    Name = "Button Name",
-    Callback = function()
-        print("Button pressed!")
-    end
-})
-```
-
-### Toggle
-
-On/off switches:
-
-```lua
-local Toggle = Tab:CreateToggle({
-    Name = "Toggle Name",
-    CurrentValue = false,
-    Flag = "Toggle1", -- Unique identifier for config saving
-    Callback = function(value)
-        print("Toggle is now:", value)
-    end
-})
-
--- Update toggle programmatically
-Toggle:Set(true)
-```
-
-### Slider
-
-Numeric value sliders:
-
-```lua
-local Slider = Tab:CreateSlider({
-    Name = "Slider Name",
-    Min = 0,
-    Max = 100,
-    Increment = 1,
-    CurrentValue = 50,
-    Flag = "Slider1",
-    Callback = function(value)
-        print("Slider value:", value)
-    end
-})
-
--- Update slider programmatically
-Slider:Set(75)
-```
-
-### Input
-
-Text input boxes:
-
-```lua
-local Input = Tab:CreateInput({
-    Name = "Input Name",
-    PlaceholderText = "Enter text...",
-    CurrentValue = "",
-    Flag = "Input1",
-    Callback = function(text)
-        print("Input text:", text)
-    end
-})
-
--- Update input programmatically
-Input:Set("New text")
-```
-
-### Dropdown
-
-Selection dropdowns:
-
-```lua
-local Dropdown = Tab:CreateDropdown({
-    Name = "Dropdown Name",
-    Options = {"Option 1", "Option 2", "Option 3"},
-    CurrentOption = "Option 1",
-    Flag = "Dropdown1",
-    Callback = function(option)
-        print("Selected:", option)
-    end
-})
-
--- Update dropdown programmatically
-Dropdown:Set("Option 2")
-
--- Refresh dropdown options
-Dropdown:Refresh({"New Option 1", "New Option 2"})
-```
-
-### Keybind
-
-Keybind selector:
-
-```lua
-local Keybind = Tab:CreateKeybind({
-    Name = "Keybind Name",
-    CurrentKeybind = "Q",
-    Flag = "Keybind1",
-    Callback = function()
-        print("Keybind pressed!")
-    end
-})
-
--- Update keybind programmatically
-Keybind:Set("E")
-```
-
-### ColorPicker
-
-Color selection:
-
-```lua
-local ColorPicker = Tab:CreateColorPicker({
-    Name = "Color Name",
-    CurrentColor = Color3.fromRGB(255, 0, 0),
-    Flag = "Color1",
-    Callback = function(color)
-        print("Color:", color)
-    end
-})
-
--- Update color programmatically
-ColorPicker:Set(Color3.fromRGB(0, 255, 0))
-```
-
-### Label
-
-Simple text labels:
-
-```lua
-local Label = Tab:CreateLabel("Label text here")
-
--- Update label text
-Label:Set("New label text")
-```
-
-### Paragraph
-
-Multi-line text blocks:
-
-```lua
-local Paragraph = Tab:CreateParagraph({
-    Title = "Title",
-    Content = "Multi-line content goes here..."
-})
-
--- Update paragraph
-Paragraph:Set("New Title", "New content")
-```
+- **Execute**: Runs the current tab's code
+- **Inject**: Injects and executes the code (same as Execute)
 
 ## 🔔 Notifications
 
-Display beautiful notifications:
+Display Windows 11 style notifications with stacking support:
 
 ```lua
 InfernixLib:Notify({
@@ -258,73 +99,34 @@ InfernixLib:Notify({
 })
 ```
 
-## 💾 Configuration System
+Notifications automatically stack vertically and fade in/out smoothly.
 
-InfernixLib includes a powerful configuration system to save and load user settings:
+## 🔐 Authentication System
 
-```lua
--- Save configuration
-Window:SaveConfig()
+InfernixLib includes a built-in key system that:
 
--- Load configuration
-Window:LoadConfig()
+- Fetches valid keys from Pastebin
+- Saves authentication locally (infernix_auth.dat)
+- Shows success/failure notifications
+- Compact Windows 11 style UI with acrylic blur
+- Only prompts once per session after first authentication
 
--- Configurations are automatically saved when AutoSave is enabled
--- and elements have a Flag property set
-```
+The key system appears automatically when creating an executor and must be completed before the UI is shown.
 
-## 🎨 Themes
+## 🎨 Design Features
 
-InfernixLib comes with three beautiful themes:
+- **Acrylic Blur**: Windows 11 style frosted glass effect on key system and main window
+- **Sharp Corners**: Modern, clean rectangular design
+- **Dark Theme**: Consistent dark gray color scheme throughout
+- **Blue Accents**: Notification accent bar and highlights
+- **Smooth Animations**: Fade transitions on all UI elements
+- **Professional Layout**: Tight spacing and proper padding
 
-- **Dark** - Dark gray theme (default)
-- **Light** - Light theme
-- **Ocean** - Blue ocean theme
+## ⌨️ Keyboard Shortcuts
 
-Specify the theme when creating a window:
-
-```lua
-Theme = "Dark" -- or "Light" or "Ocean"
-```
-
-## 🎯 Window Methods
-
-```lua
--- Toggle UI visibility
-Window:Toggle()
-
--- Save configuration
-Window:SaveConfig()
-
--- Load configuration
-Window:LoadConfig()
-```
-
-## 📝 Best Practices
-
-1. **Use Flags** - Always set unique Flag properties on elements you want to save
-2. **Enable AutoSave** - Set `AutoSave = true` in ConfigSaving for automatic saving
-3. **Organize with Sections** - Use sections to organize related elements
-4. **Test Callbacks** - Always test your callback functions for errors
-5. **Use Descriptive Names** - Make element names clear and descriptive
-
-## 🔧 Advanced Features
-
-### Manual Flag Registration
-
-```lua
-Window:RegisterFlag("MyFlag", value)
-```
-
-### Window Visibility Control
-
-```lua
--- Check if window is visible
-local isVisible = Window.Visible
-
--- Set visibility
-Window:Toggle()
-```
+- **LeftControl**: Toggle executor visibility
+- **Enter**: Submit key in authentication window
+- **Double-click**: Rename tab
 
 ## 🎮 Example Scripts
 
@@ -355,3 +157,16 @@ Free to use for personal projects. Please credit InfernixLib if you use it in yo
 ---
 
 **Made with ❤️ for the Roblox scripting community**
+game:HttpGet()` support
+  - File system functions:
+    - `isfile` (for auth check)
+    - `readfile` (for auth check)
+    - `writefile` (for saving auth and tabs)
+  - `gethui()` or CoreGui access
+  - TweenService support
+
+## 🤝 Credits
+
+Created by InfernixDev
+
+Built with Windows 11 design principles and modern UI/UX pattern
