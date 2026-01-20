@@ -32,6 +32,9 @@ local function getGuiParent()
     end
 end
 
+-- Get the loadstring function (different executors use different names)
+local loadstring = loadstring or load or function() error("Executor does not support loadstring") end
+
 -- Windows 11 Icon Assets (Public Roblox Assets)
 local Icons = {
     Close = "rbxassetid://9886659671",
