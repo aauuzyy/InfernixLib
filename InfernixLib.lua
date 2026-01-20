@@ -295,6 +295,7 @@ function InfernixLib:CreateExecutor(config)
         button.BackgroundTransparency = 1
         button.BackgroundColor3 = hoverColor
         button.Text = ""
+        button.AutoButtonColor = false
         button.ClipsDescendants = true
         button.Parent = TitleBar
         
@@ -941,6 +942,19 @@ function InfernixLib:CreateExecutor(config)
 end
 
 -- Windows 11 Style Notification System
+local activeNotifications = {}
+
+local function updateNotificationPositions()
+    local yOffset = -120
+    for i = #activeNotifications, 1, -1 do
+        local notif = activeNotifications[i]
+        if notif and notif.Parent then
+            Tween(notif, {Position = UDim2.new(1, -380, 1, yOffset)}, 0.2, Enum.EasingStyle.Quad)
+            yOffset = yOffset - 110 -- Stack with 10px gap
+        end
+    end
+end
+
 function InfernixLib:Notify(config)
     config = config or {}
     local title = config.Title or "Notification"
@@ -967,11 +981,6 @@ function InfernixLib:Notify(config)
     NotifBox.BorderSizePixel = 0
     NotifBox.Parent = NotifGui
     
-    -- Rounded corners
-    local NotifCorner = Instance.new("UICorner")
-    NotifCorner.CornerRadius = UDim.new(0, 8)
-    NotifCorner.Parent = NotifBox
-    
     -- Border stroke
     local NotifStroke = Instance.new("UIStroke")
     NotifStroke.Color = Color3.fromRGB(60, 60, 60)
@@ -987,10 +996,6 @@ function InfernixLib:Notify(config)
     AccentBar.BackgroundColor3 = Color3.fromRGB(0, 120, 212)
     AccentBar.BorderSizePixel = 0
     AccentBar.Parent = NotifBox
-    
-    local AccentCorner = Instance.new("UICorner")
-    AccentCorner.CornerRadius = UDim.new(0, 8)
-    AccentCorner.Parent = AccentBar
     
     -- Icon
     local NotifIcon = Instance.new("ImageLabel")
@@ -1028,23 +1033,43 @@ function InfernixLib:Notify(config)
     NotifContent.TextWrapped = true
     NotifContent.Parent = NotifBox
     
+    -- Add to active notifications
+    table.insert(activeNotifications, NotifBox)
+    
+    -- Update all positions
+    updateNotificationPositions()
+    
     -- Swoop in animation from bottom right
-    Tween(NotifBox, {Position = UDim2.new(1, -380, 1, -120)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    Tween(NotifBox, {Position = NotifBox.Position}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     
     -- Wait for duration then fade out
-    task.wait(duration)
-    
-    -- Fade out animation
-    Tween(NotifBox, {Position = UDim2.new(1, -380, 1, 20)}, 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-    Tween(NotifBox, {BackgroundTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
-    Tween(NotifTitle, {TextTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
-    Tween(NotifContent, {TextTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
-    Tween(NotifIcon, {ImageTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
-    Tween(NotifStroke, {Transparency = 1}, 0.3, Enum.EasingStyle.Linear)
-    Tween(AccentBar, {BackgroundTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
-    
-    task.wait(0.3)
-    NotifGui:Destroy()
+    task.spawn(function()
+        task.wait(duration)
+        
+        -- Fade out animation
+        Tween(NotifBox, {Position = UDim2.new(1, -380, 1, NotifBox.Position.Y.Offset + 20)}, 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        Tween(NotifBox, {BackgroundTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+        Tween(NotifTitle, {TextTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+        Tween(NotifContent, {TextTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+        Tween(NotifIcon, {ImageTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+        Tween(NotifStroke, {Transparency = 1}, 0.3, Enum.EasingStyle.Linear)
+        Tween(AccentBar, {BackgroundTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+        
+        task.wait(0.3)
+        
+        -- Remove from active notifications
+        for i, notif in ipairs(activeNotifications) do
+            if notif == NotifBox then
+                table.remove(activeNotifications, i)
+                break
+            end
+        end
+        
+        -- Update remaining notification positions
+        updateNotificationPositions()
+        
+        NotifGui:Destroy()
+    end)
 end
 
 return InfernixLib
