@@ -206,6 +206,7 @@ local function CreateKeySystem(callback)
     if isfile and readfile and isfile("infernix_auth.dat") then
         local savedAuth = readfile("infernix_auth.dat")
         if savedAuth == "authenticated" then
+            task.wait(0.1) -- Small delay to ensure everything is ready
             callback(true)
             return
         end
@@ -533,15 +534,14 @@ function InfernixLib:CreateExecutor(config)
         Executor.Authenticated = true
         
         -- Now create the actual UI after authentication
-        task.spawn(function()
-            createExecutorUI(Executor, config)
-            Executor.UICreated = true
-            
-            -- If Show() was called before UI was ready, show it now
-            if Executor._queuedShow then
-                Executor:Show()
-            end
-        end)
+        createExecutorUI(Executor, config)
+        Executor.UICreated = true
+        
+        -- If Show() was called before UI was ready, show it now
+        if Executor._queuedShow then
+            task.wait(0.1) -- Small delay to ensure UI is fully initialized
+            Executor:Show()
+        end
     end)
     
     return Executor

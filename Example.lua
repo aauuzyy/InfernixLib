@@ -18,6 +18,9 @@ local Executor = InfernixLib:CreateExecutor({
 -- Show the executor
 Executor:Show()
 
+-- Wait a moment before sending notification
+task.wait(1)
+
 -- Notification
 InfernixLib:Notify({
     Title = "Infernix Executor",
