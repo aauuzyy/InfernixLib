@@ -427,6 +427,9 @@ function InfernixLib:CreateExecutor(config)
     
     local CodeBox -- Forward reference
     local tabCounter = 0
+    local undoHistory = {}
+    local redoHistory = {}
+    local lastCodeState = ""
     
     -- Typing animation for URL
     local function typeURL(text)
@@ -438,12 +441,22 @@ function InfernixLib:CreateExecutor(config)
     end
     
     -- Toolbar buttons
-    createToolbarButton(Icons.NavigatePrevious, "Back", function()
-        print("Navigate back")
+    createToolbarButton(Icons.NavigatePrevious, "Undo", function()
+        if #undoHistory > 0 and CodeBox then
+            table.insert(redoHistory, CodeBox.Text)
+            local previousState = table.remove(undoHistory)
+            CodeBox.Text = previousState
+            lastCodeState = previousState
+        end
     end)
     
-    createToolbarButton(Icons.NavigateNext, "Forward", function()
-        print("Navigate forward")
+    createToolbarButton(Icons.NavigateNext, "Redo", function()
+        if #redoHistory > 0 and CodeBox then
+            table.insert(undoHistory, CodeBox.Text)
+            local nextState = table.remove(redoHistory)
+            CodeBox.Text = nextState
+            lastCodeState = nextState
+        end
     end)
     
     createToolbarButton(Icons.Copy, "Copy", function()
@@ -489,6 +502,19 @@ function InfernixLib:CreateExecutor(config)
     CodeBox.MultiLine = true
     CodeBox.ClearTextOnFocus = false
     CodeBox.Parent = EditorContainer
+    
+    -- Track changes for undo/redo
+    lastCodeState = CodeBox.Text
+    CodeBox:GetPropertyChangedSignal("Text"):Connect(function()
+        if CodeBox.Text ~= lastCodeState then
+            table.insert(undoHistory, lastCodeState)
+            if #undoHistory > 50 then -- Limit history
+                table.remove(undoHistory, 1)
+            end
+            redoHistory = {} -- Clear redo when new changes are made
+            lastCodeState = CodeBox.Text
+        end
+    end)
     
     -- Button Container
     local ButtonContainer = Instance.new("Frame")
@@ -805,6 +831,113 @@ function InfernixLib:CreateExecutor(config)
     Executor.Visible = false
     
     return Executor
+end
+
+-- Windows 11 Style Notification System
+function InfernixLib:Notify(config)
+    config = config or {}
+    local title = config.Title or "Notification"
+    local content = config.Content or ""
+    local duration = config.Duration or 3
+    
+    -- Create notification container
+    local NotifGui = Instance.new("ScreenGui")
+    NotifGui.Name = "InfernixNotification"
+    NotifGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    NotifGui.ResetOnSpawn = false
+    
+    if gethui then
+        NotifGui.Parent = gethui()
+    else
+        NotifGui.Parent = CoreGui
+    end
+    
+    -- Notification Box
+    local NotifBox = Instance.new("Frame")
+    NotifBox.Size = UDim2.new(0, 360, 0, 100)
+    NotifBox.Position = UDim2.new(1, 20, 1, -120) -- Start off-screen bottom right
+    NotifBox.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
+    NotifBox.BorderSizePixel = 0
+    NotifBox.Parent = NotifGui
+    
+    -- Rounded corners
+    local NotifCorner = Instance.new("UICorner")
+    NotifCorner.CornerRadius = UDim.new(0, 8)
+    NotifCorner.Parent = NotifBox
+    
+    -- Border stroke
+    local NotifStroke = Instance.new("UIStroke")
+    NotifStroke.Color = Color3.fromRGB(60, 60, 60)
+    NotifStroke.Thickness = 1
+    NotifStroke.Transparency = 0.5
+    NotifStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    NotifStroke.Parent = NotifBox
+    
+    -- Accent bar (Windows 11 style)
+    local AccentBar = Instance.new("Frame")
+    AccentBar.Size = UDim2.new(0, 4, 1, 0)
+    AccentBar.Position = UDim2.new(0, 0, 0, 0)
+    AccentBar.BackgroundColor3 = Color3.fromRGB(0, 120, 212)
+    AccentBar.BorderSizePixel = 0
+    AccentBar.Parent = NotifBox
+    
+    local AccentCorner = Instance.new("UICorner")
+    AccentCorner.CornerRadius = UDim.new(0, 8)
+    AccentCorner.Parent = AccentBar
+    
+    -- Icon
+    local NotifIcon = Instance.new("ImageLabel")
+    NotifIcon.Size = UDim2.new(0, 32, 0, 32)
+    NotifIcon.Position = UDim2.new(0, 16, 0, 16)
+    NotifIcon.BackgroundTransparency = 1
+    NotifIcon.Image = Icons.Icon
+    NotifIcon.ImageColor3 = Color3.fromRGB(0, 120, 212)
+    NotifIcon.Parent = NotifBox
+    
+    -- Title (Bold)
+    local NotifTitle = Instance.new("TextLabel")
+    NotifTitle.Size = UDim2.new(1, -64, 0, 24)
+    NotifTitle.Position = UDim2.new(0, 56, 0, 16)
+    NotifTitle.BackgroundTransparency = 1
+    NotifTitle.Text = title
+    NotifTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    NotifTitle.TextSize = 14
+    NotifTitle.Font = Enum.Font.GothamBold
+    NotifTitle.TextXAlignment = Enum.TextXAlignment.Left
+    NotifTitle.TextYAlignment = Enum.TextYAlignment.Top
+    NotifTitle.Parent = NotifBox
+    
+    -- Content
+    local NotifContent = Instance.new("TextLabel")
+    NotifContent.Size = UDim2.new(1, -64, 0, 48)
+    NotifContent.Position = UDim2.new(0, 56, 0, 40)
+    NotifContent.BackgroundTransparency = 1
+    NotifContent.Text = content
+    NotifContent.TextColor3 = Color3.fromRGB(180, 180, 180)
+    NotifContent.TextSize = 12
+    NotifContent.Font = Enum.Font.Gotham
+    NotifContent.TextXAlignment = Enum.TextXAlignment.Left
+    NotifContent.TextYAlignment = Enum.TextYAlignment.Top
+    NotifContent.TextWrapped = true
+    NotifContent.Parent = NotifBox
+    
+    -- Swoop in animation from bottom right
+    Tween(NotifBox, {Position = UDim2.new(1, -380, 1, -120)}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    
+    -- Wait for duration then fade out
+    task.wait(duration)
+    
+    -- Fade out animation
+    Tween(NotifBox, {Position = UDim2.new(1, -380, 1, 20)}, 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+    Tween(NotifBox, {BackgroundTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+    Tween(NotifTitle, {TextTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+    Tween(NotifContent, {TextTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+    Tween(NotifIcon, {ImageTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+    Tween(NotifStroke, {Transparency = 1}, 0.3, Enum.EasingStyle.Linear)
+    Tween(AccentBar, {BackgroundTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+    
+    task.wait(0.3)
+    NotifGui:Destroy()
 end
 
 return InfernixLib
