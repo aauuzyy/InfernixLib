@@ -563,9 +563,18 @@ function InfernixLib:CreateExecutor(config)
     
     -- Button Callbacks
     CloseBtn.MouseButton1Click:Connect(function()
-        -- Fade out animation
+        -- Simple fade out
         Tween(Background, {BackgroundTransparency = 1}, 0.2, Enum.EasingStyle.Linear)
-        Tween(Window, {Position = UDim2.new(Window.Position.X.Scale, Window.Position.X.Offset, Window.Position.Y.Scale + 0.05, Window.Position.Y.Offset)}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        for _, child in ipairs(Window:GetDescendants()) do
+            if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("ImageLabel") then
+                if child:FindFirstChild("TextTransparency") or child.ClassName == "TextLabel" or child.ClassName == "TextButton" then
+                    pcall(function() Tween(child, {TextTransparency = 1}, 0.2, Enum.EasingStyle.Linear) end)
+                end
+                if child:IsA("ImageLabel") then
+                    pcall(function() Tween(child, {ImageTransparency = 1}, 0.2, Enum.EasingStyle.Linear) end)
+                end
+            end
+        end
         task.wait(0.2)
         
         if AcrylicBlur and AcrylicBlur.Model then
@@ -594,9 +603,8 @@ function InfernixLib:CreateExecutor(config)
     end)
     
     MinimizeBtn.MouseButton1Click:Connect(function()
-        -- Fade and slide out animation
+        -- Simple fade out
         Tween(Background, {BackgroundTransparency = 1}, 0.2, Enum.EasingStyle.Linear)
-        Tween(Window, {Position = UDim2.new(Window.Position.X.Scale, Window.Position.X.Offset, 1.1, 0)}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
         task.wait(0.2)
         Window.Visible = false
         Executor.Visible = false
@@ -607,25 +615,21 @@ function InfernixLib:CreateExecutor(config)
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if input.KeyCode == Enum.KeyCode.LeftControl and not gameProcessed then
             if Window.Visible then
-                -- Hide with fade animation
+                -- Fade out
                 Tween(Background, {BackgroundTransparency = 1}, 0.2, Enum.EasingStyle.Linear)
-                Tween(Window, {Position = UDim2.new(Window.Position.X.Scale, Window.Position.X.Offset, Window.Position.Y.Scale - 0.05, Window.Position.Y.Offset)}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
                 task.wait(0.2)
                 Window.Visible = false
                 Executor.Visible = false
             else
-                -- Show with fade animation
+                -- Fade in
                 Window.Visible = true
                 Executor.Visible = true
                 if isMinimized then
-                    Window.Position = UDim2.new(originalPosition.X.Scale, originalPosition.X.Offset, 1.1, 0)
+                    Window.Position = originalPosition
                     isMinimized = false
-                else
-                    Window.Position = UDim2.new(originalPosition.X.Scale, originalPosition.X.Offset, originalPosition.Y.Scale - 0.05, originalPosition.Y.Offset)
                 end
                 Background.BackgroundTransparency = 1
                 Tween(Background, {BackgroundTransparency = 0.1}, 0.2, Enum.EasingStyle.Linear)
-                Tween(Window, {Position = originalPosition}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             end
         end
     end)
