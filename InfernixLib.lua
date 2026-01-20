@@ -421,13 +421,6 @@ function InfernixLib:CreateExecutor(config)
         print("Navigate forward")
     end)
     
-    -- Separator
-    local Separator1 = Instance.new("Frame")
-    Separator1.Size = UDim2.new(0, 1, 1, -8)
-    Separator1.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    Separator1.BorderSizePixel = 0
-    Separator1.Parent = Toolbar
-    
     createToolbarButton(Icons.Copy, "Copy", function()
         if CodeBox then
             setclipboard(CodeBox.Text)
