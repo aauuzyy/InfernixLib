@@ -420,6 +420,16 @@ function InfernixLib:CreateExecutor(config)
     end
     
     local CodeBox -- Forward reference
+    local tabCounter = 0
+    
+    -- Typing animation for URL
+    local function typeURL(text)
+        URLText.Text = ""
+        for i = 1, #text do
+            URLText.Text = text:sub(1, i)
+            task.wait(0.02)
+        end
+    end
     
     -- Toolbar buttons
     createToolbarButton(Icons.NavigatePrevious, "Back", function()
@@ -436,10 +446,10 @@ function InfernixLib:CreateExecutor(config)
         end
     end)
     
-    createToolbarButton(Icons.Save, "Save", function()
-        if CodeBox then
-            print("Saved:", CodeBox.Text)
-        end
+    createToolbarButton(Icons.Save, "New Tab", function()
+        tabCounter = tabCounter + 1
+        local newTab = Executor:CreateTab("Console " .. tabCounter)
+        newTab:SetCode("-- New console tab\nprint('Hello from Console " .. tabCounter .. "!')")
     end)
     
     createToolbarButton(Icons.Delete, "Clear", function()
@@ -661,21 +671,94 @@ function InfernixLib:CreateExecutor(config)
         corner.CornerRadius = UDim.new(0, 4)
         corner.Parent = tab
         
-        tab.MouseButton1Click:Connect(function()
-            URLText.Text = "https://infernix.executor/" .. name:lower():gsub(" ", "-")
-            Executor.CurrentTab = tabObject
-        end)
-        
         local tabObject = {
             Name = name,
-            Button = tab
+            Button = tab,
+            Code = "-- " .. name .. "\nprint('Hello World')"
         }
         
+        -- Single click to switch tabs
+        tab.MouseButton1Click:Connect(function()
+            -- Save current tab's code
+            if Executor.CurrentTab then
+                Executor.CurrentTab.Code = CodeBox.Text
+            end
+            
+            -- Switch to new tab
+            Executor.CurrentTab = tabObject
+            CodeBox.Text = tabObject.Code
+            
+            -- Typing animation for URL
+            task.spawn(function()
+                typeURL("https://infernix.executor/" .. name:lower():gsub(" ", "-"))
+            end)
+            
+            -- Highlight active tab
+            for _, t in ipairs(Executor.Tabs) do
+                t.Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+            end
+            tab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        end)
+        
+        -- Double click to rename
+        local lastClick = 0
+        tab.MouseButton1Click:Connect(function()
+            local now = tick()
+            if now - lastClick < 0.3 then
+                -- Double click detected
+                local oldName = tabObject.Name
+                tab.Text = ""
+                
+                local textBox = Instance.new("TextBox")
+                textBox.Size = UDim2.new(1, -10, 1, 0)
+                textBox.Position = UDim2.new(0, 5, 0, 0)
+                textBox.BackgroundTransparency = 1
+                textBox.Text = oldName
+                textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+                textBox.TextSize = 11
+                textBox.Font = Enum.Font.Gotham
+                textBox.ClearTextOnFocus = false
+                textBox.Parent = tab
+                textBox:CaptureFocus()
+                
+                local function finishRename()
+                    local newName = textBox.Text
+                    if newName ~= "" then
+                        tabObject.Name = newName
+                        tab.Text = newName
+                        task.spawn(function()
+                            typeURL("https://infernix.executor/" .. newName:lower():gsub(" ", "-"))
+                        end)
+                    else
+                        tab.Text = oldName
+                    end
+                    textBox:Destroy()
+                end
+                
+                textBox.FocusLost:Connect(finishRename)
+            end
+            lastClick = now
+        end)
+        
         tabObject.SetCode = function(self, code)
-            CodeBox.Text = code
+            self.Code = code
+            if Executor.CurrentTab == self then
+                CodeBox.Text = code
+            end
         end
         
         table.insert(self.Tabs, tabObject)
+        
+        -- Auto-select first tab
+        if #self.Tabs == 1 then
+            Executor.CurrentTab = tabObject
+            CodeBox.Text = tabObject.Code
+            tab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+            task.spawn(function()
+                typeURL("https://infernix.executor/" .. name:lower():gsub(" ", "-"))
+            end)
+        end
+        
         return tabObject
     end
     
@@ -703,7 +786,7 @@ function InfernixLib:CreateExecutor(config)
     end
     
     -- Add default tab
-    Executor:AddTab("Script Editor")
+    Executor:AddTab("Console")
     
     -- Initially hidden
     Window.Visible = false
