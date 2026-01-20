@@ -423,8 +423,7 @@ function InfernixLib:CreateExecutor(config)
     
     -- Separator
     local Separator1 = Instance.new("Frame")
-    Separator1.Size = UDim2.new(0, 1, 0, 24)
-    Separator1.Position = UDim2.new(0, 0, 0, 4)
+    Separator1.Size = UDim2.new(0, 1, 1, -8)
     Separator1.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     Separator1.BorderSizePixel = 0
     Separator1.Parent = Toolbar
