@@ -200,6 +200,218 @@ Acrylic.AcrylicBlur = function(distance)
 	return Blur
 end
 
+-- Key System
+local function CreateKeySystem(callback)
+    -- Check if already authenticated
+    if isfile and readfile and isfile("infernix_auth.dat") then
+        local savedAuth = readfile("infernix_auth.dat")
+        if savedAuth == "authenticated" then
+            callback(true)
+            return
+        end
+    end
+    
+    -- Fetch key from pastebin
+    local validKey = ""
+    pcall(function()
+        validKey = game:HttpGet("https://pastebin.com/raw/guX6JHX2"):gsub("%s+", "")
+    end)
+    
+    -- Create Key System GUI
+    local KeyGui = Instance.new("ScreenGui")
+    KeyGui.Name = "InfernixKeySystem"
+    KeyGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    KeyGui.ResetOnSpawn = false
+    
+    if gethui then
+        KeyGui.Parent = gethui()
+    else
+        KeyGui.Parent = CoreGui
+    end
+    
+    -- Main Window
+    local KeyWindow = Instance.new("Frame")
+    KeyWindow.Size = UDim2.new(0, 450, 0, 300)
+    KeyWindow.Position = UDim2.new(0.5, -225, 0.5, -150)
+    KeyWindow.BackgroundTransparency = 1
+    KeyWindow.BorderSizePixel = 0
+    KeyWindow.Parent = KeyGui
+    
+    -- Background with acrylic effect
+    local KeyBackground = Instance.new("Frame")
+    KeyBackground.Size = UDim2.new(1, 0, 1, 0)
+    KeyBackground.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
+    KeyBackground.BackgroundTransparency = 0.1
+    KeyBackground.BorderSizePixel = 0
+    KeyBackground.Parent = KeyWindow
+    
+    local KeyCorner = Instance.new("UICorner")
+    KeyCorner.CornerRadius = UDim.new(0, 8)
+    KeyCorner.Parent = KeyBackground
+    
+    local KeyBorder = Instance.new("UIStroke")
+    KeyBorder.Color = Color3.fromRGB(60, 60, 60)
+    KeyBorder.Thickness = 1
+    KeyBorder.Transparency = 0.5
+    KeyBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    KeyBorder.Parent = KeyBackground
+    
+    -- Title
+    local KeyTitle = Instance.new("TextLabel")
+    KeyTitle.Size = UDim2.new(1, -40, 0, 60)
+    KeyTitle.Position = UDim2.new(0, 20, 0, 30)
+    KeyTitle.BackgroundTransparency = 1
+    KeyTitle.Text = "Enter Key"
+    KeyTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    KeyTitle.TextSize = 24
+    KeyTitle.Font = Enum.Font.GothamBold
+    KeyTitle.TextXAlignment = Enum.TextXAlignment.Center
+    KeyTitle.Parent = KeyWindow
+    
+    -- Tip Text
+    local TipText = Instance.new("TextLabel")
+    TipText.Size = UDim2.new(1, -40, 0, 30)
+    TipText.Position = UDim2.new(0, 20, 0, 90)
+    TipText.BackgroundTransparency = 1
+    TipText.Text = "Join our Discord for daily keys!"
+    TipText.TextColor3 = Color3.fromRGB(180, 180, 180)
+    TipText.TextSize = 12
+    TipText.Font = Enum.Font.Gotham
+    TipText.TextXAlignment = Enum.TextXAlignment.Center
+    TipText.Parent = KeyWindow
+    
+    -- Key Input Container
+    local InputContainer = Instance.new("Frame")
+    InputContainer.Size = UDim2.new(1, -80, 0, 50)
+    InputContainer.Position = UDim2.new(0, 40, 0, 140)
+    InputContainer.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    InputContainer.BorderSizePixel = 0
+    InputContainer.Parent = KeyWindow
+    
+    local InputCorner = Instance.new("UICorner")
+    InputCorner.CornerRadius = UDim.new(0, 4)
+    InputCorner.Parent = InputContainer
+    
+    -- Key Input
+    local KeyInput = Instance.new("TextBox")
+    KeyInput.Size = UDim2.new(1, -20, 1, 0)
+    KeyInput.Position = UDim2.new(0, 10, 0, 0)
+    KeyInput.BackgroundTransparency = 1
+    KeyInput.PlaceholderText = "Enter your key here..."
+    KeyInput.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+    KeyInput.Text = ""
+    KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+    KeyInput.TextSize = 14
+    KeyInput.Font = Enum.Font.Gotham
+    KeyInput.TextXAlignment = Enum.TextXAlignment.Left
+    KeyInput.ClearTextOnFocus = false
+    KeyInput.Parent = InputContainer
+    
+    -- Status Text
+    local StatusText = Instance.new("TextLabel")
+    StatusText.Size = UDim2.new(1, -40, 0, 30)
+    StatusText.Position = UDim2.new(0, 20, 0, 210)
+    StatusText.BackgroundTransparency = 1
+    StatusText.Text = ""
+    StatusText.TextColor3 = Color3.fromRGB(220, 80, 80)
+    StatusText.TextSize = 13
+    StatusText.Font = Enum.Font.GothamMedium
+    StatusText.TextXAlignment = Enum.TextXAlignment.Center
+    StatusText.Parent = KeyWindow
+    
+    -- Typing animation for status
+    local function typeText(text, textLabel, duration)
+        textLabel.Text = ""
+        local delay = duration / #text
+        for i = 1, #text do
+            textLabel.Text = text:sub(1, i)
+            task.wait(delay)
+        end
+    end
+    
+    -- Delete animation for status
+    local function deleteText(textLabel, duration)
+        local text = textLabel.Text
+        local delay = duration / #text
+        for i = #text, 0, -1 do
+            textLabel.Text = text:sub(1, i)
+            task.wait(delay)
+        end
+    end
+    
+    -- Validate key
+    local function validateKey()
+        local enteredKey = KeyInput.Text:gsub("%s+", "")
+        
+        if enteredKey == validKey and validKey ~= "" then
+            -- Success
+            KeyInput.TextEditable = false
+            StatusText.TextColor3 = Color3.fromRGB(80, 220, 80)
+            task.spawn(function()
+                typeText("Authentication successful!", StatusText, 0.5)
+            end)
+            
+            -- Save authentication
+            if writefile then
+                writefile("infernix_auth.dat", "authenticated")
+            end
+            
+            task.wait(1)
+            
+            -- Fade out key system
+            Tween(KeyBackground, {BackgroundTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+            Tween(KeyTitle, {TextTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+            Tween(TipText, {TextTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+            Tween(KeyInput, {TextTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+            Tween(StatusText, {TextTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+            Tween(KeyBorder, {Transparency = 1}, 0.3, Enum.EasingStyle.Linear)
+            Tween(InputContainer, {BackgroundTransparency = 1}, 0.3, Enum.EasingStyle.Linear)
+            
+            task.wait(0.3)
+            KeyGui:Destroy()
+            
+            -- Show success notification
+            task.wait(0.2)
+            InfernixLib:Notify({
+                Title = "Authentication Complete",
+                Content = "Welcome to Infernix Executor!",
+                Duration = 3
+            })
+            
+            callback(true)
+        else
+            -- Failed
+            KeyInput.Text = ""
+            StatusText.TextColor3 = Color3.fromRGB(220, 80, 80)
+            task.spawn(function()
+                typeText("Invalid key. Please try again.", StatusText, 0.5)
+                task.wait(2)
+                deleteText(StatusText, 0.3)
+            end)
+            
+            -- Show failure notification
+            InfernixLib:Notify({
+                Title = "Authentication Failed",
+                Content = "The key you entered is invalid.",
+                Duration = 2
+            })
+            
+            KeyInput:CaptureFocus()
+        end
+    end
+    
+    -- Enter key to validate
+    KeyInput.FocusLost:Connect(function(enterPressed)
+        if enterPressed and KeyInput.Text ~= "" then
+            validateKey()
+        end
+    end)
+    
+    -- Auto focus
+    task.wait(0.5)
+    KeyInput:CaptureFocus()
+end
+
 -- Create Executor Window
 function InfernixLib:CreateExecutor(config)
     config = config or {}
@@ -209,8 +421,28 @@ function InfernixLib:CreateExecutor(config)
         Tabs = {},
         CurrentTab = nil,
         Visible = false,
-        Maximized = false
+        Maximized = false,
+        Authenticated = false
     }
+    
+    -- Wait for authentication
+    CreateKeySystem(function(success)
+        if not success then
+            return
+        end
+        
+        Executor.Authenticated = true
+        
+        -- Now create the actual UI after authentication
+        task.spawn(function()
+            createExecutorUI(Executor, config)
+        end)
+    end)
+    
+    return Executor
+end
+
+local function createExecutorUI(Executor, config)
     
     -- Create ScreenGui
     local ScreenGui = Instance.new("ScreenGui")
@@ -937,8 +1169,6 @@ function InfernixLib:CreateExecutor(config)
     -- Initially hidden
     Window.Visible = false
     Executor.Visible = false
-    
-    return Executor
 end
 
 -- Windows 11 Style Notification System
