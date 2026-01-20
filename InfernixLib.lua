@@ -316,6 +316,7 @@ function InfernixLib:CreateExecutor(config)
         
         button.MouseEnter:Connect(function()
             Tween(button, {BackgroundTransparency = 0}, 0.15)
+            Tween(iconLabel, {ImageColor3 = Color3.fromRGB(255, 255, 255)}, 0.15)
         end)
         
         button.MouseLeave:Connect(function()
@@ -564,8 +565,18 @@ function InfernixLib:CreateExecutor(config)
         local func, err = loadstring(code)
         if func then
             task.spawn(func)
+            InfernixLib:Notify({
+                Title = "Execution Success",
+                Content = "Script executed successfully!",
+                Duration = 2
+            })
         else
             warn("Execution Error:", err)
+            InfernixLib:Notify({
+                Title = "Execution Error",
+                Content = "Failed to execute script. Check output for details.",
+                Duration = 3
+            })
         end
     end, true)
     
@@ -576,8 +587,18 @@ function InfernixLib:CreateExecutor(config)
         if func then
             task.spawn(func)
             print("Script injected successfully")
+            InfernixLib:Notify({
+                Title = "Injection Success",
+                Content = "Script injected and running!",
+                Duration = 2
+            })
         else
             warn("Injection Error:", err)
+            InfernixLib:Notify({
+                Title = "Injection Error",
+                Content = "Failed to inject script. Check output for details.",
+                Duration = 3
+            })
         end
     end, true)
     
@@ -703,11 +724,87 @@ function InfernixLib:CreateExecutor(config)
         tab.TextColor3 = Color3.fromRGB(200, 200, 200)
         tab.TextSize = 11
         tab.Font = Enum.Font.Gotham
+        tab.ClipsDescendants = true
         tab.Parent = TabContainer
         
         local corner = Instance.new("UICorner")
         corner.CornerRadius = UDim.new(0, 4)
         corner.Parent = tab
+        
+        -- Close button for tab
+        local closeBtn = Instance.new("TextButton")
+        closeBtn.Size = UDim2.new(0, 20, 0, 20)
+        closeBtn.Position = UDim2.new(1, -24, 0.5, -10)
+        closeBtn.BackgroundTransparency = 1
+        closeBtn.Text = ""
+        closeBtn.ZIndex = 2
+        closeBtn.Visible = false
+        closeBtn.Parent = tab
+        
+        local closeIcon = Instance.new("ImageLabel")
+        closeIcon.Size = UDim2.new(0, 10, 0, 10)
+        closeIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+        closeIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+        closeIcon.Image = Icons.Close
+        closeIcon.BackgroundTransparency = 1
+        closeIcon.ImageColor3 = Color3.fromRGB(200, 200, 200)
+        closeIcon.Parent = closeBtn
+        
+        closeBtn.MouseEnter:Connect(function()
+            closeIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+        end)
+        
+        closeBtn.MouseLeave:Connect(function()
+            closeIcon.ImageColor3 = Color3.fromRGB(200, 200, 200)
+        end)
+        
+        closeBtn.MouseButton1Click:Connect(function()
+            -- Don't close if it's the last tab
+            if #Executor.Tabs <= 1 then
+                InfernixLib:Notify({
+                    Title = "Cannot Close Tab",
+                    Content = "You must have at least one tab open.",
+                    Duration = 2
+                })
+                return
+            end
+            
+            -- Find and remove this tab
+            for i, t in ipairs(Executor.Tabs) do
+                if t == tabObject then
+                    table.remove(Executor.Tabs, i)
+                    break
+                end
+            end
+            
+            -- If this was the current tab, switch to another
+            if Executor.CurrentTab == tabObject then
+                Executor.CurrentTab = Executor.Tabs[1]
+                if Executor.CurrentTab then
+                    CodeBox.Text = Executor.CurrentTab.Code
+                    task.spawn(function()
+                        typeURL("https://infernix.executor/" .. Executor.CurrentTab.Name:lower():gsub(" ", "-"))
+                    end)
+                    
+                    -- Highlight new active tab
+                    for _, t in ipairs(Executor.Tabs) do
+                        t.Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+                    end
+                    Executor.CurrentTab.Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                end
+            end
+            
+            tab:Destroy()
+        end)
+        
+        -- Show/hide close button on hover
+        tab.MouseEnter:Connect(function()
+            closeBtn.Visible = true
+        end)
+        
+        tab.MouseLeave:Connect(function()
+            closeBtn.Visible = false
+        end)
         
         local tabObject = {
             Name = name,
@@ -808,6 +905,16 @@ function InfernixLib:CreateExecutor(config)
     function Executor:Show()
         Window.Visible = true
         self.Visible = true
+        
+        -- Show welcome notification
+        task.spawn(function()
+            task.wait(0.5)
+            InfernixLib:Notify({
+                Title = "Infernix Executor",
+                Content = "Press LeftControl to toggle. Use the file icon to create new tabs.",
+                Duration = 4
+            })
+        end)
     end
     
     function Executor:Hide()
