@@ -352,17 +352,26 @@ function InfernixLib:CreateExecutor(config)
     URLText.BackgroundTransparency = 1
     URLText.Parent = URLBar
     
-    -- Tab Container (Browser-style tabs)
-    local TabContainer = Instance.new("Frame")
+    -- Tab Container (Browser-style tabs with scrolling)
+    local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Size = UDim2.new(1, -24, 0, 36)
     TabContainer.Position = UDim2.new(0, 12, 0, 88)
     TabContainer.BackgroundTransparency = 1
+    TabContainer.BorderSizePixel = 0
+    TabContainer.ScrollBarThickness = 4
+    TabContainer.ScrollBarImageColor3 = Color3.fromRGB(60, 60, 60)
+    TabContainer.CanvasSize = UDim2.new(0, 0, 0, 36)
     TabContainer.Parent = Window
     
     local TabList = Instance.new("UIListLayout")
     TabList.FillDirection = Enum.FillDirection.Horizontal
     TabList.Padding = UDim.new(0, 4)
     TabList.Parent = TabContainer
+    
+    -- Update canvas size when tabs are added
+    TabList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        TabContainer.CanvasSize = UDim2.new(0, TabList.AbsoluteContentSize.X, 0, 36)
+    end)
     
     -- Editor Toolbar (Copy, New File, Delete, Undo, Redo)
     local Toolbar = Instance.new("Frame")
@@ -549,11 +558,6 @@ function InfernixLib:CreateExecutor(config)
         end
     end, true)
     
-    -- Clear Button (Secondary)
-    createButton("Clear", function()
-        CodeBox.Text = ""
-    end, false)
-    
     -- Window State
     local originalSize = Window.Size
     local originalPosition = Window.Position
@@ -563,7 +567,8 @@ function InfernixLib:CreateExecutor(config)
     -- Button Callbacks
     CloseBtn.MouseButton1Click:Connect(function()
         -- Fade out animation
-        Tween(Window, {Size = UDim2.new(0, 0, 0, 0)}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+        Tween(Background, {BackgroundTransparency = 1}, 0.2, Enum.EasingStyle.Linear)
+        Tween(Window, {Position = UDim2.new(Window.Position.X.Scale, Window.Position.X.Offset, Window.Position.Y.Scale + 0.05, Window.Position.Y.Offset)}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
         task.wait(0.2)
         
         if AcrylicBlur and AcrylicBlur.Model then
@@ -580,44 +585,50 @@ function InfernixLib:CreateExecutor(config)
             -- Maximize
             originalSize = Window.Size
             originalPosition = Window.Position
-            Tween(Window, {Size = UDim2.new(1, -20, 1, -20), Position = UDim2.new(0, 10, 0, 10)}, 0.2)
+            Tween(Window, {Size = UDim2.new(1, -20, 1, -20), Position = UDim2.new(0, 10, 0, 10)}, 0.25, Enum.EasingStyle.Quad)
             MaximizeBtnIcon.Image = Icons.RestoreDown
             isMaximized = true
         else
             -- Restore
-            Tween(Window, {Size = originalSize, Position = originalPosition}, 0.2)
+            Tween(Window, {Size = originalSize, Position = originalPosition}, 0.25, Enum.EasingStyle.Quad)
             MaximizeBtnIcon.Image = Icons.Maximize
             isMaximized = false
         end
     end)
     
     MinimizeBtn.MouseButton1Click:Connect(function()
-        -- Minimize animation
-        Tween(Window, {Size = UDim2.new(0, 0, 0, 0)}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+        -- Fade and slide out animation
+        Tween(Background, {BackgroundTransparency = 1}, 0.2, Enum.EasingStyle.Linear)
+        Tween(Window, {Position = UDim2.new(Window.Position.X.Scale, Window.Position.X.Offset, 1.1, 0)}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        task.wait(0.2)
         Window.Visible = false
         Executor.Visible = false
         isMinimized = true
     end)
     
-    -- Toggle with RightControl
+    -- Toggle with LeftControl
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if input.KeyCode == Enum.KeyCode.RightControl and not gameProcessed then
+        if input.KeyCode == Enum.KeyCode.LeftControl and not gameProcessed then
             if Window.Visible then
-                -- Hide with animation
-                Tween(Window, {Size = UDim2.new(0, 0, 0, 0)}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+                -- Hide with fade animation
+                Tween(Background, {BackgroundTransparency = 1}, 0.2, Enum.EasingStyle.Linear)
+                Tween(Window, {Position = UDim2.new(Window.Position.X.Scale, Window.Position.X.Offset, Window.Position.Y.Scale - 0.05, Window.Position.Y.Offset)}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
                 task.wait(0.2)
                 Window.Visible = false
                 Executor.Visible = false
             else
-                -- Show with animation
+                -- Show with fade animation
                 Window.Visible = true
                 Executor.Visible = true
-                Window.Size = UDim2.new(0, 0, 0, 0)
-                if isMaximized then
-                    Tween(Window, {Size = UDim2.new(1, -20, 1, -20)}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+                if isMinimized then
+                    Window.Position = UDim2.new(originalPosition.X.Scale, originalPosition.X.Offset, 1.1, 0)
+                    isMinimized = false
                 else
-                    Tween(Window, {Size = originalSize}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+                    Window.Position = UDim2.new(originalPosition.X.Scale, originalPosition.X.Offset, originalPosition.Y.Scale - 0.05, originalPosition.Y.Offset)
                 end
+                Background.BackgroundTransparency = 1
+                Tween(Background, {BackgroundTransparency = 0.1}, 0.2, Enum.EasingStyle.Linear)
+                Tween(Window, {Position = originalPosition}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             end
         end
     end)

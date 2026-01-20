@@ -11,23 +11,8 @@ local Executor = InfernixLib:CreateExecutor({
     Name = "Infernix Executor"
 })
 
--- Create default tabs
-local ScriptTab = Executor:CreateTab("Script 1")
-local Script2Tab = Executor:CreateTab("Script 2")
-local Script3Tab = Executor:CreateTab("Settings")
-
--- Add some example code to the first tab
-ScriptTab:SetCode([[
--- Welcome to Infernix Executor!
--- Write your Lua code here and click Execute
-
-print("Hello from Infernix!")
-
--- Example: Get local player
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-print("Your name is:", LocalPlayer.Name)
-]])
+-- The executor comes with a default "Console" tab
+-- You can add more tabs by clicking the file icon button
 
 -- Show the executor
 Executor:Show()
@@ -35,7 +20,7 @@ Executor:Show()
 -- Notification
 InfernixLib:Notify({
     Title = "Infernix Executor",
-    Content = "Executor loaded! Press RightControl to toggle.",
+    Content = "Executor loaded! Press LeftControl to toggle.",
     Duration = 5
 })
 
