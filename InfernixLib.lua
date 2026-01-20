@@ -472,43 +472,94 @@ function InfernixLib:CreateExecutor(config)
     -- Button Container
     local ButtonContainer = Instance.new("Frame")
     ButtonContainer.Size = UDim2.new(1, -24, 0, 36)
-    ButtonContainer.Position = UDim2.new(0, 12, 1, -48)
+    ButtonContainer.Size = UDim2.new(1, -24, 0, 32)
+    ButtonContainer.Position = UDim2.new(0, 12, 1, -44)
     ButtonContainer.BackgroundTransparency = 1
     ButtonContainer.Parent = Window
     
     local ButtonLayout = Instance.new("UIListLayout")
     ButtonLayout.FillDirection = Enum.FillDirection.Horizontal
+    ButtonLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    ButtonLayout.VerticalAlignment = Enum.VerticalAlignment.Center
     ButtonLayout.Padding = UDim.new(0, 8)
     ButtonLayout.Parent = ButtonContainer
     
-    local function createButton(text, callback)
+    local function createButton(text, callback, isPrimary)
         local button = Instance.new("TextButton")
-        button.Size = UDim2.new(0, 100, 0, 36)
-        button.BackgroundColor3 = Color3.fromRGB(0, 120, 212)
+        button.Size = UDim2.new(0, 90, 0, 32)
+        button.AutoButtonColor = false
         button.Text = text
         button.TextColor3 = Color3.fromRGB(255, 255, 255)
         button.TextSize = 13
-        button.Font = Enum.Font.GothamSemibold
+        button.Font = Enum.Font.GothamMedium
         button.Parent = ButtonContainer
         
+        -- Set colors based on button type
+        if isPrimary then
+            button.BackgroundColor3 = Color3.fromRGB(0, 120, 212) -- Blue accent
+        else
+            button.BackgroundColor3 = Color3.fromRGB(45, 45, 48) -- Dark gray
+        end
+        
+        -- Add gradient for depth
+        local gradient = Instance.new("UIGradient")
+        gradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
+        })
+        gradient.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0.95),
+            NumberSequenceKeypoint.new(1, 0.98)
+        })
+        gradient.Rotation = 90
+        gradient.Parent = button
+        
+        -- Rounded corners
         local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 4)
+        corner.CornerRadius = UDim.new(0, 5)
         corner.Parent = button
         
+        -- Stroke for definition
+        local stroke = Instance.new("UIStroke")
+        stroke.Color = Color3.fromRGB(255, 255, 255)
+        stroke.Transparency = 0.85
+        stroke.Thickness = 1
+        stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        stroke.Parent = button
+        
+        -- Button callbacks
         button.MouseButton1Click:Connect(callback)
         
         button.MouseEnter:Connect(function()
-            Tween(button, {BackgroundColor3 = Color3.fromRGB(0, 103, 192)}, 0.2)
+            if isPrimary then
+                Tween(button, {BackgroundColor3 = Color3.fromRGB(0, 103, 192)}, 0.15)
+            else
+                Tween(button, {BackgroundColor3 = Color3.fromRGB(55, 55, 58)}, 0.15)
+            end
+            Tween(stroke, {Transparency = 0.7}, 0.15)
         end)
         
         button.MouseLeave:Connect(function()
-            Tween(button, {BackgroundColor3 = Color3.fromRGB(0, 120, 212)}, 0.2)
+            if isPrimary then
+                Tween(button, {BackgroundColor3 = Color3.fromRGB(0, 120, 212)}, 0.15)
+            else
+                Tween(button, {BackgroundColor3 = Color3.fromRGB(45, 45, 48)}, 0.15)
+            end
+            Tween(stroke, {Transparency = 0.85}, 0.15)
+        end)
+        
+        button.MouseButton1Down:Connect(function()
+            Tween(button, {Size = UDim2.new(0, 88, 0, 31)}, 0.1)
+        end)
+        
+        button.MouseButton1Up:Connect(function()
+            Tween(button, {Size = UDim2.new(0, 90, 0, 32)}, 0.1)
         end)
         
         return button
     end
     
-    -- Execute Button
+    -- Execute Button (Primary)
     createButton("Execute", function()
         local code = CodeBox.Text
         local func, err = loadstring(code)
@@ -517,9 +568,9 @@ function InfernixLib:CreateExecutor(config)
         else
             warn("Execution Error:", err)
         end
-    end)
+    end, true)
     
-    -- Inject Button
+    -- Inject Button (Primary)
     createButton("Inject", function()
         local code = CodeBox.Text
         local func, err = loadstring(code)
@@ -529,12 +580,12 @@ function InfernixLib:CreateExecutor(config)
         else
             warn("Injection Error:", err)
         end
-    end)
+    end, true)
     
-    -- Clear Button
+    -- Clear Button (Secondary)
     createButton("Clear", function()
         CodeBox.Text = ""
-    end)
+    end, false)
     
     -- Button Callbacks
     CloseBtn.MouseButton1Click:Connect(function()
