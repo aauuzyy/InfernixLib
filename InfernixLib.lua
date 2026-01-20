@@ -288,13 +288,22 @@ function InfernixLib:CreateExecutor(config)
     Title.Parent = TitleBar
     
     -- Window Controls (Minimize, Maximize, Close)
-    local function createTitleButton(icon, position, hoverColor)
+    local function createTitleButton(icon, position, hoverColor, isCloseButton)
         local button = Instance.new("TextButton")
         button.Size = UDim2.new(0, 46, 0, 40)
         button.Position = position
         button.BackgroundTransparency = 1
+        button.BackgroundColor3 = hoverColor
         button.Text = ""
+        button.ClipsDescendants = true
         button.Parent = TitleBar
+        
+        -- Add corner radius for close button
+        if isCloseButton then
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0, 8)
+            corner.Parent = button
+        end
         
         local iconLabel = Instance.new("ImageLabel")
         iconLabel.Size = UDim2.new(0, 12, 0, 12)
@@ -302,23 +311,23 @@ function InfernixLib:CreateExecutor(config)
         iconLabel.AnchorPoint = Vector2.new(0.5, 0.5)
         iconLabel.Image = icon
         iconLabel.BackgroundTransparency = 1
+        iconLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
         iconLabel.Parent = button
         
         button.MouseEnter:Connect(function()
-            button.BackgroundTransparency = 0
-            button.BackgroundColor3 = hoverColor
+            Tween(button, {BackgroundTransparency = 0}, 0.15)
         end)
         
         button.MouseLeave:Connect(function()
-            button.BackgroundTransparency = 1
+            Tween(button, {BackgroundTransparency = 1}, 0.15)
         end)
         
-        return button
+        return button, iconLabel
     end
     
-    local CloseBtn = createTitleButton(Icons.Close, UDim2.new(1, -46, 0, 0), Color3.fromRGB(196, 43, 28))
-    local MaximizeBtn = createTitleButton(Icons.Maximize, UDim2.new(1, -92, 0, 0), Color3.fromRGB(60, 60, 60))
-    local MinimizeBtn = createTitleButton(Icons.Minimize, UDim2.new(1, -138, 0, 0), Color3.fromRGB(60, 60, 60))
+    local CloseBtn, CloseBtnIcon = createTitleButton(Icons.Close, UDim2.new(1, -46, 0, 0), Color3.fromRGB(196, 43, 28), true)
+    local MaximizeBtn, MaximizeBtnIcon = createTitleButton(Icons.Maximize, UDim2.new(1, -92, 0, 0), Color3.fromRGB(60, 60, 60), false)
+    local MinimizeBtn, MinimizeBtnIcon = createTitleButton(Icons.Minimize, UDim2.new(1, -138, 0, 0), Color3.fromRGB(60, 60, 60), false)
     
     -- URL Bar (showing current tab location)
     local URLBar = Instance.new("Frame")
@@ -335,7 +344,7 @@ function InfernixLib:CreateExecutor(config)
     local URLText = Instance.new("TextLabel")
     URLText.Size = UDim2.new(1, -20, 1, 0)
     URLText.Position = UDim2.new(0, 10, 0, 0)
-    URLText.Text = "https://infernix.executor/script"
+    URLText.Text = "https://infernix.executor/script-editor"
     URLText.TextColor3 = Color3.fromRGB(180, 180, 180)
     URLText.TextSize = 11
     URLText.Font = Enum.Font.Gotham
@@ -535,8 +544,18 @@ function InfernixLib:CreateExecutor(config)
         CodeBox.Text = ""
     end, false)
     
+    -- Window State
+    local originalSize = Window.Size
+    local originalPosition = Window.Position
+    local isMaximized = false
+    local isMinimized = false
+    
     -- Button Callbacks
     CloseBtn.MouseButton1Click:Connect(function()
+        -- Fade out animation
+        Tween(Window, {Size = UDim2.new(0, 0, 0, 0)}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+        task.wait(0.2)
+        
         if AcrylicBlur and AcrylicBlur.Model then
             AcrylicBlur.Model:Destroy()
         end
@@ -544,6 +563,53 @@ function InfernixLib:CreateExecutor(config)
             DepthOfField:Destroy()
         end
         ScreenGui:Destroy()
+    end)
+    
+    MaximizeBtn.MouseButton1Click:Connect(function()
+        if not isMaximized then
+            -- Maximize
+            originalSize = Window.Size
+            originalPosition = Window.Position
+            Tween(Window, {Size = UDim2.new(1, -20, 1, -20), Position = UDim2.new(0, 10, 0, 10)}, 0.2)
+            MaximizeBtnIcon.Image = Icons.RestoreDown
+            isMaximized = true
+        else
+            -- Restore
+            Tween(Window, {Size = originalSize, Position = originalPosition}, 0.2)
+            MaximizeBtnIcon.Image = Icons.Maximize
+            isMaximized = false
+        end
+    end)
+    
+    MinimizeBtn.MouseButton1Click:Connect(function()
+        -- Minimize animation
+        Tween(Window, {Size = UDim2.new(0, 0, 0, 0)}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+        Window.Visible = false
+        Executor.Visible = false
+        isMinimized = true
+    end)
+    
+    -- Toggle with RightControl
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if input.KeyCode == Enum.KeyCode.RightControl and not gameProcessed then
+            if Window.Visible then
+                -- Hide with animation
+                Tween(Window, {Size = UDim2.new(0, 0, 0, 0)}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+                task.wait(0.2)
+                Window.Visible = false
+                Executor.Visible = false
+            else
+                -- Show with animation
+                Window.Visible = true
+                Executor.Visible = true
+                Window.Size = UDim2.new(0, 0, 0, 0)
+                if isMaximized then
+                    Tween(Window, {Size = UDim2.new(1, -20, 1, -20)}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+                else
+                    Tween(Window, {Size = originalSize}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+                end
+            end
+        end
     end)
     
     -- Make draggable
@@ -603,8 +669,30 @@ function InfernixLib:CreateExecutor(config)
         return tab
     end
     
+    function Executor:Show()
+        Window.Visible = true
+        self.Visible = true
+    end
+    
+    function Executor:Hide()
+        Window.Visible = false
+        self.Visible = false
+    end
+    
+    function Executor:Toggle()
+        if Window.Visible then
+            self:Hide()
+        else
+            self:Show()
+        end
+    end
+    
     -- Add default tab
     Executor:AddTab("Script Editor")
+    
+    -- Initially hidden
+    Window.Visible = false
+    Executor.Visible = false
     
     return Executor
 end
