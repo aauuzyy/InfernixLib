@@ -231,8 +231,8 @@ local function CreateKeySystem(callback)
     
     -- Main Window
     local KeyWindow = Instance.new("Frame")
-    KeyWindow.Size = UDim2.new(0, 400, 0, 240)
-    KeyWindow.Position = UDim2.new(0.5, -200, 0.5, -120)
+    KeyWindow.Size = UDim2.new(0, 400, 0, 200)
+    KeyWindow.Position = UDim2.new(0.5, -200, 0.5, -100)
     KeyWindow.BackgroundTransparency = 1
     KeyWindow.BorderSizePixel = 0
     KeyWindow.ClipsDescendants = true
@@ -303,8 +303,8 @@ local function CreateKeySystem(callback)
     
     -- Title
     local KeyTitle = Instance.new("TextLabel")
-    KeyTitle.Size = UDim2.new(1, -60, 0, 40)
-    KeyTitle.Position = UDim2.new(0, 20, 0, 20)
+    KeyTitle.Size = UDim2.new(1, -60, 0, 35)
+    KeyTitle.Position = UDim2.new(0, 20, 0, 15)
     KeyTitle.BackgroundTransparency = 1
     KeyTitle.Text = "Enter Key"
     KeyTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -315,8 +315,8 @@ local function CreateKeySystem(callback)
     
     -- Tip Text
     local TipText = Instance.new("TextLabel")
-    TipText.Size = UDim2.new(1, -40, 0, 24)
-    TipText.Position = UDim2.new(0, 20, 0, 60)
+    TipText.Size = UDim2.new(1, -40, 0, 20)
+    TipText.Position = UDim2.new(0, 20, 0, 50)
     TipText.BackgroundTransparency = 1
     TipText.Text = "Join our Discord for daily keys!"
     TipText.TextColor3 = Color3.fromRGB(180, 180, 180)
@@ -327,8 +327,8 @@ local function CreateKeySystem(callback)
     
     -- Key Input Container
     local InputContainer = Instance.new("Frame")
-    InputContainer.Size = UDim2.new(1, -60, 0, 45)
-    InputContainer.Position = UDim2.new(0, 30, 0, 100)
+    InputContainer.Size = UDim2.new(1, -60, 0, 40)
+    InputContainer.Position = UDim2.new(0, 30, 0, 85)
     InputContainer.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     InputContainer.BorderSizePixel = 0
     InputContainer.Parent = KeyWindow
@@ -346,7 +346,7 @@ local function CreateKeySystem(callback)
     KeyInput.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
     KeyInput.Text = ""
     KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-    KeyInput.TextSize = 14
+    KeyInput.TextSize = 13
     KeyInput.Font = Enum.Font.Gotham
     KeyInput.TextXAlignment = Enum.TextXAlignment.Left
     KeyInput.ClearTextOnFocus = false
@@ -354,8 +354,8 @@ local function CreateKeySystem(callback)
     
     -- Status Text
     local StatusText = Instance.new("TextLabel")
-    StatusText.Size = UDim2.new(1, -40, 0, 30)
-    StatusText.Position = UDim2.new(0, 20, 0, 160)
+    StatusText.Size = UDim2.new(1, -40, 0, 50)
+    StatusText.Position = UDim2.new(0, 20, 0, 135)
     StatusText.BackgroundTransparency = 1
     StatusText.Text = ""
     StatusText.TextColor3 = Color3.fromRGB(220, 80, 80)
