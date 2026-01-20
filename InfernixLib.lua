@@ -396,6 +396,13 @@ local function CreateKeySystem(callback)
                 typeText("Authentication successful!", StatusText, 0.5)
             end)
             
+            -- Show success notification
+            InfernixLib:Notify({
+                Title = "Authentication Complete",
+                Content = "Welcome to Infernix Executor!",
+                Duration = 3
+            })
+            
             -- Save authentication
             if writefile then
                 writefile("infernix_auth.dat", "authenticated")
@@ -420,31 +427,25 @@ local function CreateKeySystem(callback)
             end
             KeyGui:Destroy()
             
-            -- Show success notification
-            task.wait(0.2)
-            InfernixLib:Notify({
-                Title = "Authentication Complete",
-                Content = "Welcome to Infernix Executor!",
-                Duration = 3
-            })
-            
+            task.wait(0.1)
             callback(true)
         else
             -- Failed
             KeyInput.Text = ""
             StatusText.TextColor3 = Color3.fromRGB(220, 80, 80)
+            
+            -- Show failure notification
+            InfernixLib:Notify({
+                Title = "Authentication Failed",
+                Content = "The key you entered is invalid. Please try again.",
+                Duration = 3
+            })
+            
             task.spawn(function()
                 typeText("Invalid key. Please try again.", StatusText, 0.5)
                 task.wait(2)
                 deleteText(StatusText, 0.3)
             end)
-            
-            -- Show failure notification
-            InfernixLib:Notify({
-                Title = "Authentication Failed",
-                Content = "The key you entered is invalid.",
-                Duration = 2
-            })
             
             KeyInput:CaptureFocus()
         end

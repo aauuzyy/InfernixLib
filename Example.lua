@@ -4,7 +4,8 @@
 ]]
 
 -- Load the library
-local InfernixLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/aauuzyy/InfernixLib/main/InfernixLib.lua?v=" .. os.time()))()
+math.randomseed(tick())
+local InfernixLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/aauuzyy/InfernixLib/main/InfernixLib.lua?v=" .. math.random(1, 999999)))()
 
 -- Create executor window
 local Executor = InfernixLib:CreateExecutor({
