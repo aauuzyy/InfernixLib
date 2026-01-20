@@ -473,8 +473,56 @@ function InfernixLib:CreateExecutor(config)
         CurrentTab = nil,
         Visible = false,
         Maximized = false,
-        Authenticated = false
+        Authenticated = false,
+        UICreated = false
     }
+    
+    -- Define methods immediately so they're available
+    function Executor:Show()
+        if not self.UICreated then
+            -- UI not created yet, queue the show
+            self._queuedShow = true
+            return
+        end
+        self._Window.Visible = true
+        self.Visible = true
+        
+        -- Show welcome notification
+        task.spawn(function()
+            task.wait(0.5)
+            InfernixLib:Notify({
+                Title = "Infernix Executor",
+                Content = "Press LeftControl to toggle. Use the file icon to create new tabs.",
+                Duration = 4
+            })
+        end)
+    end
+    
+    function Executor:Hide()
+        if not self.UICreated then return end
+        self._Window.Visible = false
+        self.Visible = false
+    end
+    
+    function Executor:Toggle()
+        if not self.UICreated then return end
+        if self._Window.Visible then
+            self:Hide()
+        else
+            self:Show()
+        end
+    end
+    
+    function Executor:AddTab(name)
+        if not self.UICreated then
+            error("Cannot add tab before UI is created")
+        end
+        return self._addTabInternal(name)
+    end
+    
+    function Executor:CreateTab(name)
+        return self:AddTab(name)
+    end
     
     -- Wait for authentication
     CreateKeySystem(function(success)
@@ -487,6 +535,12 @@ function InfernixLib:CreateExecutor(config)
         -- Now create the actual UI after authentication
         task.spawn(function()
             createExecutorUI(Executor, config)
+            Executor.UICreated = true
+            
+            -- If Show() was called before UI was ready, show it now
+            if Executor._queuedShow then
+                Executor:Show()
+            end
         end)
     end)
     
@@ -1000,7 +1054,11 @@ local function createExecutorUI(Executor, config)
         end
     end)
     
-    function Executor:AddTab(name)
+    -- Store Window reference for methods
+    Executor._Window = Window
+    
+    -- Internal tab creation function
+    Executor._addTabInternal = function(name)
         local tab = Instance.new("TextButton")
         tab.Size = UDim2.new(0, 120, 0, 32)
         tab.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
@@ -1181,41 +1239,8 @@ local function createExecutorUI(Executor, config)
         return tabObject
     end
     
-    -- Alias for compatibility
-    function Executor:CreateTab(name)
-        return self:AddTab(name)
-    end
-    
-    function Executor:Show()
-        Window.Visible = true
-        self.Visible = true
-        
-        -- Show welcome notification
-        task.spawn(function()
-            task.wait(0.5)
-            InfernixLib:Notify({
-                Title = "Infernix Executor",
-                Content = "Press LeftControl to toggle. Use the file icon to create new tabs.",
-                Duration = 4
-            })
-        end)
-    end
-    
-    function Executor:Hide()
-        Window.Visible = false
-        self.Visible = false
-    end
-    
-    function Executor:Toggle()
-        if Window.Visible then
-            self:Hide()
-        else
-            self:Show()
-        end
-    end
-    
     -- Add default tab
-    Executor:AddTab("Console")
+    Executor._addTabInternal("Console")
     
     -- Initially hidden
     Window.Visible = false
