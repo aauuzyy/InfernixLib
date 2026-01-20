@@ -35,12 +35,23 @@ end
 -- Get the loadstring function (different executors use different names)
 local loadstring = loadstring or load or function() error("Executor does not support loadstring") end
 
+-- Basic function fallbacks
+local wait = wait or function(t) 
+    local start = os.clock()
+    repeat until os.clock() - start >= (t or 0)
+end
+
+local spawn = spawn or function(f)
+    local success, err = pcall(f)
+    if not success then warn("Spawn error:", err) end
+end
+
 -- Task library fallback for older executors
 if not task then
     task = {
-        wait = wait or function(t) return RunService.Heartbeat:Wait() end,
-        spawn = spawn or function(f) coroutine.wrap(f)() end,
-        delay = delay or function(t, f) spawn(function() wait(t) f() end) end
+        wait = wait,
+        spawn = spawn,
+        delay = function(t, f) spawn(function() wait(t) f() end) end
     }
 end
 
